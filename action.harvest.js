@@ -1,3 +1,5 @@
+var lock = require("lock");
+
 var actionHarvest = {
   harvest: function(creep) {
     source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
@@ -7,18 +9,20 @@ var actionHarvest = {
   },
 
   harvestAnything: function(creep) {
-    creep.say("H");
-    var lock = require("lock");
     s = this.locked_resource(creep);
     if (s != undefined) {
-      creep.say("[" + s.pos.x + ", " + s.pos.y + "]");
-      this.goHarvest(creep, s);
-      return;
+      if (s.energy == 0) {
+        lock.release(creep, s);
+      }
+      else {
+        this.goHarvest(creep, s);
+        return;
+      }
     }
     structures = creep.room.find(FIND_STRUCTURES, {
       filter: (s) => {
-        structureTypes = [STRUCTURE_EXTENSION];
-        return (structureTypes.includes(s.structureType)) && s.energy > 0;
+        structureTypes = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN];
+        return (structureTypes.includes(s.structureType) && s.energy > 0) || (s.structureType == STRUCTURE_STORAGE && s.store[RESOURCE_ENERGY] > 0);
       }
     });
     if (structures != "") {
@@ -32,7 +36,7 @@ var actionHarvest = {
       var can_lock = false;
       while (idx < structures.length && !can_lock) {
         s = structures[idx];
-        can_lock = lock.lock(creep, s, Game.time + 2* creep.pos.findPathTo(s).length);
+        can_lock = lock.lock(creep, s, Game.time + require("utils.eta").timeToDestination(creep, s));
         idx ++;
       }
       if (can_lock)

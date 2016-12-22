@@ -1,10 +1,12 @@
 var roleUpgrader = {
   updateStatus: function(creep) {
-    if (creep.carry.energy == creep.carryCapacity) {
+    if (creep.carry.energy == creep.carryCapacity && creep.memory.status != "upgrading") {
       creep.memory.status = "upgrading";
+      require("lock").releaseCreep(creep);
     }
-    else if (creep.carry.energy == 0) {
+    else if (creep.carry.energy == 0 && creep.memory.status != "filling") {
       creep.memory.status = "filling";
+      require("lock").releaseCreep(creep);
     }
   },
 

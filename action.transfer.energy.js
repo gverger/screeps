@@ -12,6 +12,20 @@ var actionTransferEnergy = {
         creep.moveTo(s);
       }
     }
+    else {
+      structures = creep.room.find(FIND_STRUCTURES, {
+        filter: (s) => {
+          return s.structureType == STRUCTURE_STORAGE && s.store[RESOURCE_ENERGY] < s.storeCapacity;
+        }
+      });
+      if (structures != "") {
+        s = creep.pos.findClosestByPath(structures);
+        if(creep.transfer(s, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+          creep.moveTo(s);
+        }
+      }
+
+    }
   }
 };
 

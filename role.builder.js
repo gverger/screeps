@@ -1,10 +1,12 @@
 var roleBuilder = {
   updateStatus: function(creep) {
-    if (creep.carry.energy == creep.carryCapacity) {
+    if (creep.carry.energy == creep.carryCapacity && creep.memory.status != "building") {
       creep.memory.status = "building";
+      require("lock").releaseCreep(creep);
     }
-    else if (creep.carry.energy == 0) {
+    else if (creep.carry.energy == 0 && creep.memory.status != "filling") {
       creep.memory.status = "filling";
+      require("lock").releaseCreep(creep);
     }
   },
 
@@ -16,7 +18,9 @@ var roleBuilder = {
     }
     else if (creep.memory.status == "building") {
       site = creep.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES);
-      if(creep.build(site) == ERR_NOT_IN_RANGE) {
+      if (!site)
+        creep.memory.role = "repairer";
+      else if(creep.build(site) == ERR_NOT_IN_RANGE) {
         creep.moveTo(site);
       }
     }
