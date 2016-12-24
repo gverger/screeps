@@ -28,6 +28,5 @@ module.exports.loop = function () {
     else if (creep.memory.role == "carryier" ) {
       roleCarryier.run(creep);
     }
-    // creep.say("mon chéri, brossage de dents");
   }
 }
