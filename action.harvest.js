@@ -22,7 +22,9 @@ var actionHarvest = {
     structures = creep.room.find(FIND_STRUCTURES, {
       filter: (s) => {
         structureTypes = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN];
-        return (structureTypes.includes(s.structureType) && s.energy > 0) || (s.structureType == STRUCTURE_STORAGE && s.store[RESOURCE_ENERGY] > 0);
+        return (s.structureType === STRUCTURE_EXTENSION && s.energy > 0) ||
+          (s.structureType === STRUCTURE_SPAWN && s.energy > 100) ||
+          (s.structureType == STRUCTURE_STORAGE && s.store[RESOURCE_ENERGY] > 0);
       }
     });
     if (structures != "") {

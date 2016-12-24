@@ -22,8 +22,7 @@ var roleRepairer = {
     else if (creep.memory.status == "repairing") {
       var roadToRepair = creep.pos.findClosestByPath(FIND_STRUCTURES, {
         filter: function(object){
-          return (object.structureType === STRUCTURE_ROAD ||
-              object.structureType === STRUCTURE_WALL) && (object.hits < Math.min(object.hitsMax, 20000) / 2);
+          return  (object.hits < Math.min(object.hitsMax, 20000) / 2);
         }
       });
       if(creep.repair(roadToRepair) == ERR_NOT_IN_RANGE) {
