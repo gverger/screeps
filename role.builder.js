@@ -17,10 +17,13 @@ var roleBuilder = {
       require("action.harvest").harvestAnything(creep);
     }
     else if (creep.memory.status == "building") {
-      site = creep.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES);
-      if (!site)
-        creep.memory.role = "repairer";
-      else if(creep.build(site) == ERR_NOT_IN_RANGE) {
+      var site = creep.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES, {
+        filter: (s) => { return s.structureType != STRUCTURE_ROAD }
+      });
+      if (!site) {
+        site = creep.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES);
+      }
+      if(creep.build(site) == ERR_NOT_IN_RANGE) {
         creep.moveTo(site);
       }
     }
