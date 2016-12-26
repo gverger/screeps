@@ -1,15 +1,15 @@
 var lock = {
   lock: function(entity, resource, score) {
     this.init();
-    locked = this.get(resource.id)
+    var locked = this.get(resource.id)
     if (locked == undefined) {
       this.applyLock(entity, resource, score);
       return true;
     }
     else {
-      lock_score = locked.score;
+      var lock_score = locked.score;
       if (score < lock_score) {
-        entity2 = Game.getObjectById(locked.entity);
+        var entity2 = Game.getObjectById(locked.entity);
         if (entity2 != null) {
           entity2.memory.lock = undefined;
         }
@@ -27,18 +27,16 @@ var lock = {
   },
 
   lockAllResources: function(spawn) {
-    console.log("LOCKING");
-    resources = this.resources(spawn.room);
-    for(r of resources) {
+    var resources = this.resources(spawn.room);
+    for(let r of resources) {
       this.lock(spawn, r, 0);
     }
   },
 
   releaseAllResources: function(spawn) {
-    console.log("UNLOCKING");
-    resources = this.resources(spawn.room);
-    for(r of resources) {
-      locked = this.get(r.id);
+    var resources = this.resources(spawn.room);
+    for(let r of resources) {
+      var locked = this.get(r.id);
       if (locked != undefined && locked.entity == spawn.id)
         this.remove(r.id);
     }
@@ -47,7 +45,7 @@ var lock = {
   resources: function(room) {
     return room.find(FIND_STRUCTURES, {
       filter: (s) => {
-        structureTypes = [STRUCTURE_SPAWN, STRUCTURE_EXTENSION];
+        var structureTypes = [STRUCTURE_SPAWN, STRUCTURE_EXTENSION];
         return (structureTypes.includes(s.structureType));
       }
     });
@@ -71,7 +69,7 @@ var lock = {
 
   releaseCreep: function(entity) {
     // console.log("RELEASE CREEP " + entity.name);
-    locked = entity.memory.lock;
+    var locked = entity.memory.lock;
     if (locked != undefined) {
       this.remove(locked)
     }
@@ -80,15 +78,16 @@ var lock = {
   },
 
   clean: function() {
-    to_remove = [];
-    for (key in Memory.lock) {
-      lock = Memory.lock[key];
-      id = lock.entity;
-      entity = Game.getObjectById(id)
+    var to_remove = [];
+    for (let key in Memory.lock) {
+      var lock = Memory.lock[key];
+      var id = lock.entity;
+      var entity = Game.getObjectById(id)
       if (entity == null || entity == undefined || entity.memory.lock != key)
         to_remove.push(key);
     }
     for (var i = 0, len = to_remove.length; i < len; i++) {
+      var key = to_remove[i]
       console.log("Deleting " + key);
       delete Memory.lock[key];
     }

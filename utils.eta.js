@@ -4,20 +4,20 @@ var eta = {
    * @param {RoomPosition} destination
    **/
   timeToDestination: function(creep, destination) {
-    path = creep.pos.findPathTo(destination);
-    weight = this.weight(creep);
-    nbOfMoves = this.nbOfMoves(creep);
-    room = creep.room;
-    time = 0;
-    for (step of path) {
-      terrain = room.lookForAt(LOOK_TERRAIN, step.x, step.y);
-      isRoad = room.lookForAt(LOOK_STRUCTURES, step.x, step.y).some(
+    var path = creep.pos.findPathTo(destination);
+    var weight = this.weight(creep);
+    var nbOfMoves = this.nbOfMoves(creep);
+    var room = creep.room;
+    var time = 0;
+    for (let step of path) {
+      var terrain = room.lookForAt(LOOK_TERRAIN, step.x, step.y);
+      var isRoad = room.lookForAt(LOOK_STRUCTURES, step.x, step.y).some(
           (s) => { return s.structureType == 'road'}
           );
       if (isRoad) {
         terrain = "road";
       }
-      terrainMultiplier = this.terrainMult(terrain);
+      var terrainMultiplier = this.terrainMult(terrain);
       time += Math.ceil(terrainMultiplier * weight / nbOfMoves)
     }
     return time;
@@ -42,7 +42,7 @@ var eta = {
    * */
   weight: function(creep) {
     var energy = creep.carry.energy;
-    sum = creep.body.reduce( function(sum, bodyPart) {
+    var sum = creep.body.reduce( function(sum, bodyPart) {
       if (bodyPart.type == MOVE || (bodyPart.type == CARRY && energy <= 0)) {
         return sum
       }
@@ -62,14 +62,6 @@ var eta = {
       }
       return sum;
     }, 0);
-  },
-
-  test: function() {
-    creep = Game.creeps['Cooper'];
-    if (!creep)
-      console.log('NO CREEP');
-    console.log(this.weight(creep));
-    console.log(this.nbOfMoves(creep));
   }
 };
 

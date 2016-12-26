@@ -6,9 +6,9 @@ var actionBuildRoads = {
     // }
     var source = room.controller.pos.findClosestByRange(room.find(FIND_SOURCES));
     if (source != null) {
-      path = room.controller.pos.findPathTo(source.pos, { ignoreCreeps: true });
+      var path = room.controller.pos.findPathTo(source.pos, { ignoreCreeps: true });
       for (i = 0; i < path.length; i++) {
-        step = path[i];
+        var step = path[i];
         room.createConstructionSite(step.x, step.y, STRUCTURE_ROAD);
         if (step.dx == 1 || step.dx == -1) {
           room.createConstructionSite(step.x, step.y + 1, STRUCTURE_ROAD);
@@ -60,7 +60,7 @@ var actionBuildRoads = {
     var max_y = 0;
     for (var x = 0; x < 50; x++) {
       for (var y = 0; y < 50; y++) {
-        isRoad = room.lookForAt(LOOK_STRUCTURES, x, y).some(
+        var isRoad = room.lookForAt(LOOK_STRUCTURES, x, y).some(
             (s) => { return s.structureType == 'road'}
             );
         if (isRoad)

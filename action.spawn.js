@@ -37,24 +37,24 @@ var actionSpawn = {
 
     if (spawn.canCreateCreep(body) == OK) {
       if (this.nb_of("harvester") < max_harvesters) {
-        creep = spawn.createCreep(body, undefined, { role: "harvester" });
+        var creep = spawn.createCreep(body, undefined, { role: "harvester" });
         console.log("New harvester : " + creep.name);
         lock.releaseAllResources(spawn);
       }
       else if (this.nb_of("upgrader") < max_upgraders) {
-        creep = spawn.createCreep(body, undefined, { role: "upgrader" });
+        var creep = spawn.createCreep(body, undefined, { role: "upgrader" });
         console.log("New upgrader : " + creep.name);
       }
       else if (this.nb_of("builder") < max_builders) {
-        creep = spawn.createCreep(body, undefined, { role: "builder" });
+        var creep = spawn.createCreep(body, undefined, { role: "builder" });
         console.log("New builder : " + creep.name);
       }
       else if (this.nb_of("repairer") < max_repairers) {
-        creep = spawn.createCreep(body, undefined, { role: "repairer" });
+        var creep = spawn.createCreep(body, undefined, { role: "repairer" });
         console.log("New repairer : " + creep.name);
       }
       else if (this.nb_of("carryier") < max_carryiers) {
-        creep = spawn.createCreep([CARRY, CARRY, MOVE, MOVE], undefined, { role: "carryier" });
+        var creep = spawn.createCreep([CARRY, CARRY, MOVE, MOVE], undefined, { role: "carryier" });
         console.log("New carryier : " + creep.name);
       }
     }
@@ -67,7 +67,7 @@ var actionSpawn = {
   debug_info: function() {
     var roles = ["harvester", "upgrader", "builder", "carryier"];
     for (let i = 0; i < roles.length; i++) {
-      roleName = roles[i];
+      var roleName = roles[i];
       console.log('Nb of '+ roleName + ' : ' + this.nb_of(roleName));
     };
   }
