@@ -11,7 +11,9 @@ var actionHarvest = {
   harvestAnything: function(creep) {
     var s = this.locked_resource(creep);
     if (s != undefined) {
-      if (s.energy == 0) {
+      if ((s.structureType === STRUCTURE_EXTENSION && s.energy == 0) ||
+          ([STRUCTURE_STORAGE, STRUCTURE_CONTAINER].includes(s.structureType) && s.store[RESOURCE_ENERGY] == 0))
+          {
         lock.release(creep, s);
       }
       else {

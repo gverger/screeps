@@ -1,8 +1,11 @@
 var lock = require("lock");
 var actionSpawn = {
+  /**
+   * @param {Spawn} spawn
+   **/
   spawn: function(spawn) {
-    var max_harvesters = 8;
-    var max_upgraders = 3;
+    var max_harvesters = 4;
+    var max_upgraders = 2;
     var max_builders = 0;
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
       max_builders = 2;
@@ -26,10 +29,18 @@ var actionSpawn = {
     costs[CLAIM] = 600;
     costs[TOUGH] = 10;
 
-    // this.debug_info();
+    this.debug_info();
+
+    if (this.nb_of("harvester") < max_harvesters) {
+      lock.lockAllResources(spawn);
+    }
 
     var body = [];
     var maxEnergy = spawn.room.energyCapacityAvailable;
+    if (this.nb_of("harvester") == 0) {
+      maxEnergy = spawn.room.energyAvailable + spawn.energyCapacity - spawn.energy;
+    }
+
     var enegyNeeded = 0;
     while (enegyNeeded <= maxEnergy) {
       for( let bodyPart of [CARRY, WORK, MOVE]) {
@@ -39,9 +50,6 @@ var actionSpawn = {
         body.push(bodyPart);
       }
     }
-    if (this.nb_of("harvester") < max_harvesters)
-      lock.lockAllResources(spawn);
-
     if (spawn.canCreateCreep(body) == OK) {
       if (this.nb_of("harvester") < max_harvesters) {
         var creep = spawn.createCreep(body, undefined, { role: "harvester" });
@@ -72,7 +80,7 @@ var actionSpawn = {
   },
 
   debug_info: function() {
-    var roles = ["harvester", "upgrader", "builder", "carryier"];
+    var roles = ["harvester", "upgrader", "builder", "repairer", "carryier"];
     for (let i = 0; i < roles.length; i++) {
       var roleName = roles[i];
       console.log('Nb of '+ roleName + ' : ' + this.nb_of(roleName));
