@@ -1,13 +1,20 @@
 var lock = require("lock");
 var actionSpawn = {
   spawn: function(spawn) {
-    var max_harvesters = 4;
+    var max_harvesters = 8;
     var max_upgraders = 3;
     var max_builders = 0;
-    if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0)
+    if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
       max_builders = 2;
+      if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES, {
+        filter: (s) => { return s.structureType == STRUCTURE_EXTENSION }
+      }).length > 0) {
+        max_upgraders = 0;
+        max_builders = 4;
+      }
+    }
     var max_carryiers = 0;
-    var max_repairers = 0;
+    var max_repairers = 1;
 
     var costs = {};
     costs[MOVE] = 50;
