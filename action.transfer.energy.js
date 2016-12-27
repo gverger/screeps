@@ -15,7 +15,8 @@ var actionTransferEnergy = {
     else {
       var structures = creep.room.find(FIND_STRUCTURES, {
         filter: (s) => {
-          return s.structureType == STRUCTURE_STORAGE && s.store[RESOURCE_ENERGY] < s.storeCapacity;
+          var structureTypes = [STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
+          return structureTypes.includes(s.structureType) && s.store[RESOURCE_ENERGY] < s.storeCapacity;
         }
       });
       if (structures != "") {

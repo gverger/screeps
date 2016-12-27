@@ -58,12 +58,14 @@ var actionBuildRoads = {
     var max = 0;
     var max_x = 0;
     var max_y = 0;
+    var isRoad = new PathFinder.CostMatrix;
+    roads = room.find(FIND_STRUCTURES, { filter: (s) => { return s.structureType === STRUCTURE_ROAD } });
+    for (road of roads) {
+      isRoad.set(road.pos.x, road.pos.y, 1);
+    }
     for (var x = 0; x < 50; x++) {
       for (var y = 0; y < 50; y++) {
-        var isRoad = room.lookForAt(LOOK_STRUCTURES, x, y).some(
-            (s) => { return s.structureType == 'road'}
-            );
-        if (isRoad)
+        if (isRoad.get(x, y))
           continue;
 
         if (max < matrix.get(x, y)) {
