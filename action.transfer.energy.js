@@ -1,31 +1,15 @@
+var utils = require("utils");
 var actionTransferEnergy = {
-  transfer: function(creep) {
-    var structures = creep.room.find(FIND_STRUCTURES, {
-      filter: (s) => {
-        var structureTypes = [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_EXTENSION];
-        return (structureTypes.includes(s.structureType)) && s.energy < s.energyCapacity;
-      }
-    });
+  transfer: function(creep, structureTypes = undefined) {
+    var structures = utils.structuresNeedingEnergy(creep.room);
+    if (structureTypes)
+      structures = _.filter(structures, (s) => structureTypes.includes(s.structureType));
     if (structures != "") {
       var s = creep.pos.findClosestByPath(structures);
+      creep.say(s.pos.x + " " + s.pos.y);
       if(creep.transfer(s, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
         creep.moveTo(s);
       }
-    }
-    else {
-      var structures = creep.room.find(FIND_STRUCTURES, {
-        filter: (s) => {
-          var structureTypes = [STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
-          return structureTypes.includes(s.structureType) && s.store[RESOURCE_ENERGY] < s.storeCapacity;
-        }
-      });
-      if (structures != "") {
-        var s = creep.pos.findClosestByPath(structures);
-        if(creep.transfer(s, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(s);
-        }
-      }
-
     }
   }
 };
