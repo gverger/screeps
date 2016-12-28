@@ -1,4 +1,5 @@
 var lock = require("lock");
+var utils = require("utils");
 var actionMemoryClean = {
   clean: function() {
     for(var i in Memory.creeps) {
@@ -8,6 +9,7 @@ var actionMemoryClean = {
         lock.clean();
       }
     }
+    utils.clean();
   }
 };
 

@@ -24,27 +24,33 @@ var utils = {
   },
 
   structuresNeedingEnergyTypes: function() {
-    return [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
+    if (!this.__structuresNeedingEnergyTypes) {
+      this.__structuresNeedingEnergyTypes =
+        [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
+    }
+    return this.__structuresNeedingEnergyTypes;
   },
 
   /**
    * @param {Room} room
    **/
   structuresNeedingEnergy: function(room) {
-    // this.__structuresNeedingEnergy = undefined;
-    if (!this.cached_SNE) {
-      console.log("COMPUTE");
+    if (!this.__structuresNeedingEnergy) {
       var structureEnergyTypes = [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_EXTENSION];
       var structureStorageTypes = [STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
 
-      this.cached_SNE = room.find(FIND_STRUCTURES, {
+      this.__structuresNeedingEnergy = room.find(FIND_STRUCTURES, {
         filter: (s) => {
           return (structureEnergyTypes.includes(s.structureType) && s.energy < s.energyCapacity) ||
             (structureStorageTypes.includes(s.structureType) && s.store[RESOURCE_ENERGY] < s.storeCapacity);
         }
       });
     }
-    return this.cached_SNE;
+    return this.__structuresNeedingEnergy;
+  },
+
+  clean: function() {
+    this.__structuresNeedingEnergy = undefined;
   }
 };
 
