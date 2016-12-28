@@ -1,25 +1,28 @@
+var utils = require("utils");
+
 var actionBuildRoads = {
   buildRoads: function(room) {
     this.usedPoints(room);
-    // if (Memory.roads) {
+    if (Memory.roads) {
       return null;
-    // }
-    var source = room.controller.pos.findClosestByRange(room.find(FIND_SOURCES));
-    if (source != null) {
-      var path = room.controller.pos.findPathTo(source.pos, { ignoreCreeps: true });
-      for (i = 0; i < path.length; i++) {
-        var step = path[i];
-        room.createConstructionSite(step.x, step.y, STRUCTURE_ROAD);
-        if (step.dx == 1 || step.dx == -1) {
-          room.createConstructionSite(step.x, step.y + 1, STRUCTURE_ROAD);
-        }
-        if (step.dy == 1 || step.dy == -1) {
-          room.createConstructionSite(step.x + 1, step.y, STRUCTURE_ROAD);
-        }
-      };
+    }
+    var sources = room.find(FIND_SOURCES);
+    for (let source of sources) {
+      this.buildTheRoad(room, room.controller.pos, source.pos);
+      var spawn = utils.spawnOfRoom(room);
+      this.buildTheRoad(room, spawn.pos, source.pos);
       Memory.roads = true;
     }
   },
+
+  buildTheRoad: function(room,pos1, pos2) {
+    var path = pos1.findPathTo(pos2, { ignoreCreeps: true });
+    for (i = 0; i < path.length; i++) {
+      var step = path[i];
+      room.createConstructionSite(step.x, step.y, STRUCTURE_ROAD);
+    };
+  },
+
 
   /* @function usedPoints
    * @param {Room}
@@ -59,8 +62,8 @@ var actionBuildRoads = {
     var max_x = 0;
     var max_y = 0;
     var isRoad = new PathFinder.CostMatrix;
-    roads = room.find(FIND_STRUCTURES, { filter: (s) => { return s.structureType === STRUCTURE_ROAD } });
-    for (road of roads) {
+    var roads = room.find(FIND_STRUCTURES);
+    for (let road of roads) {
       isRoad.set(road.pos.x, road.pos.y, 1);
     }
     for (var x = 0; x < 50; x++) {
@@ -68,14 +71,18 @@ var actionBuildRoads = {
         if (isRoad.get(x, y))
           continue;
 
-        if (max < matrix.get(x, y)) {
-          max = matrix.get(x, y);
+        var value = matrix.get(x, y)
+        if (max < value) {
+          max = value;
           max_x = x;
           max_y = y;
         }
+        // if (value > 0) {
+        //   matrix.set(x, y, value - 1);
+        // }
       }
     }
-    if (max > 0) {
+    if (max > 10) {
       room.createConstructionSite(max_x, max_y, STRUCTURE_ROAD);
     }
   }

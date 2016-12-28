@@ -5,10 +5,11 @@ var actionSpawn = {
    **/
   spawn: function(spawn) {
     var max_harvesters = 4;
-    var max_upgraders = 2;
+    var max_upgraders = 4;
     var max_builders = 0;
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
       max_builders = 2;
+      max_upgraders = 3;
       if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES, {
         filter: (s) => { return s.structureType == STRUCTURE_EXTENSION }
       }).length > 0) {
@@ -29,7 +30,7 @@ var actionSpawn = {
     costs[CLAIM] = 600;
     costs[TOUGH] = 10;
 
-    this.debug_info();
+    // this.debug_info();
 
     if (this.nb_of("harvester") < max_harvesters) {
       lock.lockAllResources(spawn);
@@ -43,7 +44,7 @@ var actionSpawn = {
 
     var enegyNeeded = 0;
     while (enegyNeeded <= maxEnergy) {
-      for( let bodyPart of [CARRY, WORK, MOVE]) {
+      for( let bodyPart of [CARRY, WORK, MOVE, MOVE]) {
         enegyNeeded += costs[bodyPart];
         if (enegyNeeded > maxEnergy)
           break;
