@@ -1,3 +1,5 @@
+var utils = require("utils");
+var eta = require("utils.eta");
 var lock = require("lock");
 
 var actionHarvest = {
@@ -8,10 +10,10 @@ var actionHarvest = {
     }
   },
 
-  harvestAnything: function(creep) {
+  harvestAnything: function(creep, structureTypes = undefined) {
     var s = this.locked_resource(creep);
     if (s != undefined) {
-      if ((s.structureType === STRUCTURE_EXTENSION && s.energy == 0) ||
+      if ((s.energyCapacity && s.energy == 0) ||
           ([STRUCTURE_STORAGE, STRUCTURE_CONTAINER].includes(s.structureType) && s.store[RESOURCE_ENERGY] == 0))
           {
         lock.release(creep, s);
@@ -21,13 +23,9 @@ var actionHarvest = {
         return;
       }
     }
-    var structures = creep.room.find(FIND_STRUCTURES, {
-      filter: (s) => {
-        return (s.structureType === STRUCTURE_EXTENSION && s.energy > 0) ||
-          (s.structureType === STRUCTURE_SPAWN && s.energy > 100) ||
-          ([STRUCTURE_STORAGE, STRUCTURE_CONTAINER].includes(s.structureType) && s.store[RESOURCE_ENERGY] > 0);
-      }
-    });
+    var structures = utils.structuresGivingEnergy(creep.room);
+    if (structureTypes)
+      structures = _.filter(structures, (s) => structureTypes.includes(s.structureType));
     if (structures != "") {
       var distances = {}
       for (i = 0; i < structures.length; i++) {
@@ -39,7 +37,7 @@ var actionHarvest = {
       var can_lock = false;
       while (idx < structures.length && !can_lock) {
         var s = structures[idx];
-        var can_lock = lock.lock(creep, s, Game.time + require("utils.eta").timeToDestination(creep, s));
+        var can_lock = lock.lock(creep, s, Game.time + eta.timeToDestination(creep, s));
         idx ++;
       }
       if (can_lock)
@@ -53,15 +51,21 @@ var actionHarvest = {
   },
 
   goHarvest: function(creep, structure) {
-    if(creep.withdraw(structure, RESOURCE_ENERGY ) == ERR_NOT_IN_RANGE) {
+    var errCode = creep.withdraw(structure, RESOURCE_ENERGY );
+    if(errCode == ERR_NOT_IN_RANGE) {
       creep.moveTo(structure);
     }
+    if (errCode != OK && errCode != ERR_NOT_IN_RANGE)
+      creep.say(errCode);
   },
 
   locked_resource: function(creep) {
     if (creep.memory.lock == undefined)
       return undefined;
-    return Game.getObjectById(creep.memory.lock);
+    var resource = Game.getObjectById(creep.memory.lock);
+    if (!resource)
+      delete creep.memory.lock
+    return resource;
   }
 };
 

@@ -9,7 +9,7 @@ var utils = {
 
   roles: function() {
     if (!this.cachedRoles) {
-      this.cachedRoles = ["harvester", "upgrader", "builder", "repairer", "hauler"];
+      this.cachedRoles = ["harvester", "hauler", "upgrader", "builder", "repairer"];
     }
     return this.cachedRoles;
   },
@@ -49,8 +49,27 @@ var utils = {
     return this.__structuresNeedingEnergy;
   },
 
+  /**
+   * @param {Room} room
+   **/
+  structuresGivingEnergy: function(room) {
+    if (!this.__structuresGivingEnergy) {
+      var structureStorageTypes = [STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
+
+      this.__structuresGivingEnergy = room.find(FIND_STRUCTURES, {
+        filter: (s) => {
+          return (s.structureType == STRUCTURE_EXTENSION && s.energy > 0) ||
+            (s.structureType == STRUCTURE_SPAWN && s.energy > 100) ||
+            (structureStorageTypes.includes(s.structureType) && s.store[RESOURCE_ENERGY] > 0);
+        }
+      });
+    }
+    return this.__structuresGivingEnergy;
+  },
+
   clean: function() {
     this.__structuresNeedingEnergy = undefined;
+    this.__structuresGivingEnergy = undefined;
   }
 };
 

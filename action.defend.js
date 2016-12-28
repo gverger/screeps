@@ -5,6 +5,7 @@ var defend = {
    **/
   defend: function(room) {
     this.safeMode(room);
+    this.towerDefend(room);
   },
 
   /**
@@ -26,8 +27,14 @@ var defend = {
       console.log("SAFE MODE!");
       controller.activateSafeMode();
     }
-  }
+  },
 
+  towerDefend: function(room) {
+    var towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType == STRUCTURE_TOWER});
+    _(towers).each(function(t) {
+      console.log(t.pos.x + " " + t.pos.y);
+    });
+  }
 };
 
 module.exports = defend;

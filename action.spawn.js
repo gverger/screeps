@@ -25,14 +25,17 @@ var actionSpawn = {
 
   bodyFor: function(spawn, role) {
     var maxEnergy = spawn.room.energyCapacityAvailable;
-    if (this.nbOf("harvester") == 0) {
+    if (role == "harvester" && this.nbOf("harvester") == 0) {
       maxEnergy = spawn.room.energyAvailable;
     }
 
+    var bodyParts = [CARRY, WORK, MOVE];
+    if (role == "hauler")
+      bodyParts = [CARRY, MOVE];
     var body = [];
     var enegyNeeded = 0;
     while (enegyNeeded <= maxEnergy) {
-      for( let bodyPart of [CARRY, WORK, MOVE]) {
+      for( let bodyPart of bodyParts) {
         enegyNeeded += BODYPART_COST[bodyPart];
         if (enegyNeeded > maxEnergy)
           break;
@@ -52,7 +55,7 @@ var actionSpawn = {
    **/
   whatNext: function(spawn) {
     var max = {};
-    max['harvester'] = 6;
+    max['harvester'] = 3;
     max['upgrader'] = 4;
     max['builder'] = 4;
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
@@ -65,7 +68,7 @@ var actionSpawn = {
         max['upgrader'] = 0;
       }
     }
-    max['hauler'] = 0;
+    max['hauler'] = 2;
     max['repairer'] = 1;
 
     var nbOfCreeps = _.countBy(spawn.room.find(FIND_MY_CREEPS), 'memory.role');

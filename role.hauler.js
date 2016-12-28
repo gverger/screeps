@@ -17,10 +17,12 @@ var roleHauler = {
         if(creep.pickup(dropped) == ERR_NOT_IN_RANGE) {
           creep.moveTo(dropped);
         }
+      } else {
+        require("action.harvest").harvestAnything(creep, [STRUCTURE_STORAGE, STRUCTURE_CONTAINER]);
       }
     }
     else if (creep.memory.status == "transfering") {
-      require("action.transfer.energy").transfer(creep);
+      require("action.transfer.energy").transfer(creep, [STRUCTURE_SPAWN, STRUCTURE_EXTENSION]);
     }
   }
 };
