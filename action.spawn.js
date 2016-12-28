@@ -1,90 +1,80 @@
+var utils = require("utils");
 var lock = require("lock");
 var actionSpawn = {
   /**
    * @param {Spawn} spawn
    **/
   spawn: function(spawn) {
-    var max_harvesters = 4;
-    var max_upgraders = 4;
-    var max_builders = 0;
-    if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
-      max_builders = 2;
-      max_upgraders = 3;
-      if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES, {
-        filter: (s) => { return s.structureType == STRUCTURE_EXTENSION }
-      }).length > 0) {
-        max_upgraders = 0;
-        max_builders = 4;
-      }
-    }
-    var max_carryiers = 0;
-    var max_repairers = 1;
-
-    var costs = {};
-    costs[MOVE] = 50;
-    costs[WORK] = 100;
-    costs[CARRY] = 50;
-    costs[ATTACK] = 80;
-    costs[RANGED_ATTACK] = 150;
-    costs[HEAL] = 250;
-    costs[CLAIM] = 600;
-    costs[TOUGH] = 10;
-
     // this.debug_info();
+    var next_role = this.whatNext(spawn);
+    if (!next_role)
+      return;
 
-    if (this.nb_of("harvester") < max_harvesters) {
+    if (next_role == "harvester") {
       lock.lockAllResources(spawn);
     }
 
     var body = [];
     var maxEnergy = spawn.room.energyCapacityAvailable;
-    if (this.nb_of("harvester") == 0) {
+    if (this.nbOf("harvester") == 0) {
       maxEnergy = spawn.room.energyAvailable + spawn.energyCapacity - spawn.energy;
     }
 
     var enegyNeeded = 0;
     while (enegyNeeded <= maxEnergy) {
-      for( let bodyPart of [CARRY, WORK, MOVE, MOVE]) {
-        enegyNeeded += costs[bodyPart];
+      for( let bodyPart of [CARRY, WORK, MOVE]) {
+        enegyNeeded += BODYPART_COST[bodyPart];
         if (enegyNeeded > maxEnergy)
           break;
         body.push(bodyPart);
       }
     }
     if (spawn.canCreateCreep(body) == OK) {
-      if (this.nb_of("harvester") < max_harvesters) {
-        var creep = spawn.createCreep(body, undefined, { role: "harvester" });
-        console.log("New harvester : " + creep.name);
+      var creep = spawn.createCreep(body, undefined, { role: next_role});
+      console.log("New " + next_role + " created.");
+      if (next_role == "harvester") {
         lock.releaseAllResources(spawn);
-      }
-      else if (this.nb_of("upgrader") < max_upgraders) {
-        var creep = spawn.createCreep(body, undefined, { role: "upgrader" });
-        console.log("New upgrader : " + creep.name);
-      }
-      else if (this.nb_of("builder") < max_builders) {
-        var creep = spawn.createCreep(body, undefined, { role: "builder" });
-        console.log("New builder : " + creep.name);
-      }
-      else if (this.nb_of("repairer") < max_repairers) {
-        var creep = spawn.createCreep(body, undefined, { role: "repairer" });
-        console.log("New repairer : " + creep.name);
-      }
-      else if (this.nb_of("carryier") < max_carryiers) {
-        var creep = spawn.createCreep([CARRY, CARRY, MOVE, MOVE], undefined, { role: "carryier" });
-        console.log("New carryier : " + creep.name);
       }
     }
   },
 
-  nb_of: function(roleName) {
+  nbOf: function(roleName) {
     return _(Game.creeps).filter({ memory: { role:roleName} }).size();
   },
 
+  /**
+   * @param {StructureSpawn} spawn
+   * @return {string}
+   **/
+  whatNext: function(spawn) {
+    var max = {};
+    max['harvester'] = 4;
+    max['upgrader'] = 4;
+    max['builder'] = 4;
+    if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
+      max['builder'] = 2;
+      max['upgrader'] = 3;
+      if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES, {
+        filter: (s) => { return s.structureType == STRUCTURE_EXTENSION }
+      }).length > 0) {
+        max['builder'] = 4;
+        max['upgrader'] = 0;
+      }
+    }
+    max['carryier'] = 0;
+    max['repairer'] = 1;
+
+    var nbOfCreeps = _.countBy(spawn.room.find(FIND_MY_CREEPS), 'memory.role');
+    for(let r of utils.roles()) {
+      var count = nbOfCreeps[r] || 0;
+      if (count < max[r])
+        return r;
+    }
+  },
+
   debug_info: function() {
-    var roles = ["harvester", "upgrader", "builder", "repairer", "carryier"];
-    for (let i = 0; i < roles.length; i++) {
-      var roleName = roles[i];
-      console.log('Nb of '+ roleName + ' : ' + this.nb_of(roleName));
+    for (let roleName of utils.roles()) {
+      console.log('Nb of '+ roleName + ' : ' + this.nbOf(roleName));
     };
   }
 };
