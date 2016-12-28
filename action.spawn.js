@@ -1,3 +1,4 @@
+var utils = require("utils");
 var lock = require("lock");
 var actionSpawn = {
   /**
@@ -21,7 +22,7 @@ var actionSpawn = {
 
     var enegyNeeded = 0;
     while (enegyNeeded <= maxEnergy) {
-      for( let bodyPart of [CARRY, WORK, MOVE, MOVE]) {
+      for( let bodyPart of [CARRY, WORK, MOVE]) {
         enegyNeeded += BODYPART_COST[bodyPart];
         if (enegyNeeded > maxEnergy)
           break;
@@ -64,7 +65,7 @@ var actionSpawn = {
     max['repairer'] = 1;
 
     var nbOfCreeps = _.countBy(spawn.room.find(FIND_MY_CREEPS), 'memory.role');
-    for(let r of this.roles()) {
+    for(let r of utils.roles()) {
       var count = nbOfCreeps[r] || 0;
       if (count < max[r])
         return r;
@@ -72,16 +73,9 @@ var actionSpawn = {
   },
 
   debug_info: function() {
-    for (let roleName of this.roles()) {
+    for (let roleName of utils.roles()) {
       console.log('Nb of '+ roleName + ' : ' + this.nbOf(roleName));
     };
-  },
-
-  roles: function() {
-    if (!this.cachedRoles) {
-      this.cachedRoles = ["harvester", "upgrader", "builder", "repairer", "carryier"];
-    }
-    return this.cachedRoles;
   }
 };
 
