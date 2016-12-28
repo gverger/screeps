@@ -65,7 +65,7 @@ var actionSpawn = {
         max['upgrader'] = 0;
       }
     }
-    max['carryier'] = 0;
+    max['hauler'] = 0;
     max['repairer'] = 1;
 
     var nbOfCreeps = _.countBy(spawn.room.find(FIND_MY_CREEPS), 'memory.role');

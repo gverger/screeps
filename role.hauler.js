@@ -1,4 +1,4 @@
-var roleCarryier = {
+var roleHauler = {
   updateStatus: function(creep) {
     if (creep.room.find(FIND_DROPPED_ENERGY) == "" && creep.carry.energy > 0) {
       creep.memory.status = "transfering";
@@ -25,4 +25,4 @@ var roleCarryier = {
   }
 };
 
-module.exports = roleCarryier;
+module.exports = roleHauler;

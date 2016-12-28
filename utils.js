@@ -9,7 +9,7 @@ var utils = {
 
   roles: function() {
     if (!this.cachedRoles) {
-      this.cachedRoles = ["harvester", "upgrader", "builder", "repairer", "carryier"];
+      this.cachedRoles = ["harvester", "upgrader", "builder", "repairer", "hauler"];
     }
     return this.cachedRoles;
   },
