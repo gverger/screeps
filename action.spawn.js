@@ -6,18 +6,18 @@ var actionSpawn = {
    **/
   spawn: function(spawn) {
     // this.debug_info();
-    var next_role = this.whatNext(spawn);
-    if (!next_role)
+    var nextRole = this.whatNext(spawn);
+    if (!nextRole)
       return;
 
-    if (next_role == "harvester") {
+    if (nextRole == "harvester") {
       lock.lockAllResources(spawn);
     }
-    var body = this.bodyFor(spawn, next_role);
+    var body = this.bodyFor(spawn, nextRole);
     if (spawn.canCreateCreep(body) == OK) {
-      var creep = spawn.createCreep(body, undefined, { role: next_role});
-      console.log("New " + next_role + " created.");
-      if (next_role == "harvester") {
+      var creep = spawn.createCreep(body, undefined, { role: nextRole});
+      console.log("New " + nextRole + " created.");
+      if (nextRole == "harvester") {
         lock.releaseAllResources(spawn);
       }
     }
@@ -26,7 +26,7 @@ var actionSpawn = {
   bodyFor: function(spawn, role) {
     var maxEnergy = spawn.room.energyCapacityAvailable;
     if (this.nbOf("harvester") == 0) {
-      maxEnergy = spawn.room.energyAvailable + spawn.energyCapacity - spawn.energy;
+      maxEnergy = spawn.room.energyAvailable;
     }
 
     var body = [];
