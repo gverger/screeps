@@ -13,13 +13,23 @@ var actionSpawn = {
     if (next_role == "harvester") {
       lock.lockAllResources(spawn);
     }
+    var body = this.bodyFor(spawn, next_role);
+    if (spawn.canCreateCreep(body) == OK) {
+      var creep = spawn.createCreep(body, undefined, { role: next_role});
+      console.log("New " + next_role + " created.");
+      if (next_role == "harvester") {
+        lock.releaseAllResources(spawn);
+      }
+    }
+  },
 
-    var body = [];
+  bodyFor: function(spawn, role) {
     var maxEnergy = spawn.room.energyCapacityAvailable;
     if (this.nbOf("harvester") == 0) {
       maxEnergy = spawn.room.energyAvailable + spawn.energyCapacity - spawn.energy;
     }
 
+    var body = [];
     var enegyNeeded = 0;
     while (enegyNeeded <= maxEnergy) {
       for( let bodyPart of [CARRY, WORK, MOVE]) {
@@ -29,13 +39,7 @@ var actionSpawn = {
         body.push(bodyPart);
       }
     }
-    if (spawn.canCreateCreep(body) == OK) {
-      var creep = spawn.createCreep(body, undefined, { role: next_role});
-      console.log("New " + next_role + " created.");
-      if (next_role == "harvester") {
-        lock.releaseAllResources(spawn);
-      }
-    }
+    return body;
   },
 
   nbOf: function(roleName) {
@@ -48,7 +52,7 @@ var actionSpawn = {
    **/
   whatNext: function(spawn) {
     var max = {};
-    max['harvester'] = 4;
+    max['harvester'] = 6;
     max['upgrader'] = 4;
     max['builder'] = 4;
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
