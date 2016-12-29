@@ -10,7 +10,7 @@ var actionHarvest = {
     }
   },
 
-  harvestAnything: function(creep, structureTypes = undefined) {
+  harvestAnything: function(creep, filter) {
     var s = this.locked_resource(creep);
     if (s != undefined) {
       if ((s.energyCapacity && s.energy == 0) ||
@@ -24,8 +24,8 @@ var actionHarvest = {
       }
     }
     var structures = utils.structuresGivingEnergy(creep.room);
-    if (structureTypes)
-      structures = _.filter(structures, (s) => structureTypes.includes(s.structureType));
+    if (filter)
+      structures = _.filter(structures, filter);
     if (structures != "") {
       var distances = {}
       for (i = 0; i < structures.length; i++) {

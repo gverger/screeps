@@ -30,10 +30,14 @@ var defend = {
   },
 
   towerDefend: function(room) {
-    var towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType == STRUCTURE_TOWER});
-    _(towers).each(function(t) {
-      console.log(t.pos.x + " " + t.pos.y);
-    });
+    var hostiles = room.find(FIND_HOSTILE_CREEPS);
+    if (hostiles.length) { 
+      var towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType == STRUCTURE_TOWER});
+      for (let t of towers) {
+        var target = t.pos.findClosestByRange(hostiles);
+        t.attack(target);
+      }
+    }
   }
 };
 

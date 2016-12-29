@@ -1,3 +1,4 @@
+var utils = require("utils");
 var roleHauler = {
   updateStatus: function(creep) {
     if (creep.room.find(FIND_DROPPED_ENERGY) == "" && creep.carry.energy > 0) {
@@ -18,11 +19,17 @@ var roleHauler = {
           creep.moveTo(dropped);
         }
       } else {
-        require("action.harvest").harvestAnything(creep, [STRUCTURE_STORAGE, STRUCTURE_CONTAINER]);
+        require("action.harvest").harvestAnything(creep, function(s) {
+          return s.structureType == STRUCTURE_STORAGE ||
+            (s.structureType == STRUCTURE_CONTAINER && utils.isHarvestingContainer(s));
+        });
       }
     }
     else if (creep.memory.status == "transfering") {
-      require("action.transfer.energy").transfer(creep, [STRUCTURE_SPAWN, STRUCTURE_EXTENSION]);
+      require("action.transfer.energy").transfer(creep, function(s) {
+        return [STRUCTURE_SPAWN, STRUCTURE_EXTENSION].includes(s.structureType) ||
+          s.structureType == STRUCTURE_CONTAINER && !utils.isHarvestingContainer(s)
+      });
     }
   }
 };

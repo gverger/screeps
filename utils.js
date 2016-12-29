@@ -67,6 +67,36 @@ var utils = {
     return this.__structuresGivingEnergy;
   },
 
+  isHarvestingContainer: function(structure) {
+    if (structure.structureType != STRUCTURE_CONTAINER)
+      return false;
+    if (this.harvestingContainers(structure.room).includes(structure.id))
+      return true;
+    return false;
+  },
+
+  harvestingContainers: function(room) {
+    if (!this.__harvestingContainers) {
+      var containers = room.find(FIND_STRUCTURES, { filter: s => s.structureType == STRUCTURE_CONTAINER });
+      var sources = room.find(FIND_SOURCES);
+      this.__harvestingContainers = [];
+      for (c of containers) {
+        var source = c.pos.findClosestByRange(sources);
+        if (this.distance(c, source) <= 2)
+          this.__harvestingContainers.push(c.id);
+      }
+    }
+    return this.__harvestingContainers;
+  },
+
+  /**
+   * @param {RoomObject} object1
+   * @param {RoomObject} object2
+   **/
+  distance: function(object1, object2) {
+    return Math.max(Math.abs(object1.pos.x - object2.pos.x), Math.abs(object1.pos.y - object2.pos.y));
+  },
+
   clean: function() {
     this.__structuresNeedingEnergy = undefined;
     this.__structuresGivingEnergy = undefined;
