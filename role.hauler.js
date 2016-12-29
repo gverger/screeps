@@ -47,7 +47,7 @@ var roleHauler = {
         if (!canHarvest) {
 
           var harvesters = _.filter(Game.creeps, function(c) {
-            return c.memory.role == "harvester" && c.carry.energy > 20
+            return c.memory.role == "harvester" && c.carry.energy > 40
           });
 
           var h = creep.pos.findClosestByPath(harvesters);
