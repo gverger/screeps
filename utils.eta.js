@@ -10,7 +10,7 @@ var eta = {
     var room = creep.room;
     var time = 0;
     for (let step of path) {
-      var terrain = room.lookForAt(LOOK_TERRAIN, step.x, step.y);
+      var terrain = room.lookForAt(LOOK_TERRAIN, step.x, step.y)[0];
       var isRoad = room.lookForAt(LOOK_STRUCTURES, step.x, step.y).some(
           (s) => { return s.structureType == 'road'}
           );
