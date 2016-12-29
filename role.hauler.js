@@ -19,10 +19,33 @@ var roleHauler = {
           creep.moveTo(dropped);
         }
       } else {
-        require("action.harvest").harvestAnything(creep, function(s) {
+        var canHarvest = require("action.harvest").harvestAnything(creep, function(s) {
           return s.structureType == STRUCTURE_STORAGE ||
             (s.structureType == STRUCTURE_CONTAINER && utils.isHarvestingContainer(s));
         });
+
+        if (!canHarvest) {
+
+          var harvesters = _.filter(Game.creeps, function(c) {
+            return c.memory.role == "harvester" && c.carry.energy > 0
+          });
+
+          try {
+            var h = creep.pos.findClosestByPath(harvesters);
+            if (h) {
+              if(utils.distance(creep, h) > 1) {
+                creep.moveTo(h);
+              }
+              else {
+                var errCode = h.drop(RESOURCE_ENERGY, Math.min(h.carry.energy, creep.carryCapacity));
+                h.say("drop : "+ errCode);
+              }
+            }
+          } catch (e) {
+            console.log(e.message);
+            /* handle error */
+          }
+        }
       }
     }
     else if (creep.memory.status == "transfering") {

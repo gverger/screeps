@@ -20,7 +20,7 @@ var actionHarvest = {
       }
       else {
         this.goHarvest(creep, s);
-        return;
+        return true;
       }
     }
     var structures = utils.structuresGivingEnergy(creep.room);
@@ -40,14 +40,12 @@ var actionHarvest = {
         var can_lock = lock.lock(creep, s, Game.time + eta.timeToDestination(creep, s));
         idx ++;
       }
-      if (can_lock)
+      if (can_lock) {
         this.goHarvest(creep, s);
-      else
-        this.harvest(creep);
+        return true;
+      }
     }
-    else {
-      this.harvest(creep);
-    }
+    return false;
   },
 
   goHarvest: function(creep, structure) {
