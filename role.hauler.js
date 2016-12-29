@@ -37,16 +37,14 @@ var roleHauler = {
             }
             else {
               var errCode = h.drop(RESOURCE_ENERGY, Math.min(h.carry.energy, creep.carryCapacity));
-              h.say("drop : "+ errCode);
             }
           } else {
             creep.memory.status = "transfering";
-            run(creep);
           }
         }
       }
     }
-    else if (creep.memory.status == "transfering") {
+     if (creep.memory.status == "transfering") {
       require("action.transfer.energy").transfer(creep, function(s) {
         return [STRUCTURE_SPAWN, STRUCTURE_EXTENSION].includes(s.structureType) ||
           s.structureType == STRUCTURE_CONTAINER && !utils.isHarvestingContainer(s)

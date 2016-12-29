@@ -29,15 +29,22 @@ var actionSpawn = {
       maxEnergy = spawn.room.energyAvailable;
     }
 
+    var body = [];
     var bodyParts = [CARRY, WORK, MOVE];
+    var energyNeeded = 0;
+
     if (role == "hauler")
       bodyParts = [CARRY, MOVE];
-    var body = [];
-    var enegyNeeded = 0;
-    while (enegyNeeded <= maxEnergy) {
+    else if (role == "harvester") {
+      body = [CARRY, MOVE];
+      bodyParts = [WORK];
+      maxEnergy = Math.min(maxEnergy, BODYPART_COST[CARRY] + BODYPART_COST[MOVE] + 5*BODYPART_COST[WORK]);
+      energyNeeded = BODYPART_COST[CARRY] + BODYPART_COST[MOVE];
+    }
+    while (energyNeeded <= maxEnergy) {
       for( let bodyPart of bodyParts) {
-        enegyNeeded += BODYPART_COST[bodyPart];
-        if (enegyNeeded > maxEnergy)
+        energyNeeded += BODYPART_COST[bodyPart];
+        if (energyNeeded > maxEnergy)
           break;
         body.push(bodyPart);
       }
