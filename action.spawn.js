@@ -57,7 +57,7 @@ var actionSpawn = {
     var max = {};
     max['harvester'] = 3;
     max['upgrader'] = 4;
-    max['builder'] = 4;
+    max['builder'] = 0;
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
       max['builder'] = 2;
       max['upgrader'] = 3;
