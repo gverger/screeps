@@ -71,7 +71,8 @@ var actionSpawn = {
     max['hauler'] = 2;
     max['repairer'] = 1;
 
-    var nbOfCreeps = _.countBy(spawn.room.find(FIND_MY_CREEPS), 'memory.role');
+    var nbOfCreeps = _.countBy(_.filter(Game.creeps, { room: spawn.room }), 'memory.role');
+
     for(let r of utils.roles()) {
       var count = nbOfCreeps[r] || 0;
       if (count < max[r])
