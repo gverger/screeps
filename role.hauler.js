@@ -1,7 +1,7 @@
 var utils = require("utils");
 var roleHauler = {
   updateStatus: function(creep) {
-    if (creep.room.find(FIND_DROPPED_ENERGY) == "" && creep.carry.energy > 0) {
+    if (creep.carry.energy == creep.carryCapacity) {
       creep.memory.status = "transfering";
     }
     else if (creep.carry.energy == 0) {
@@ -13,7 +13,7 @@ var roleHauler = {
     this.updateStatus(creep);
 
     if(creep.memory.status == "filling") {
-      dropped = creep.pos.findClosestByPath(FIND_DROPPED_ENERGY);
+      var dropped = creep.pos.findClosestByPath(FIND_DROPPED_ENERGY);
       if (dropped != null) {
         if(creep.pickup(dropped) == ERR_NOT_IN_RANGE) {
           creep.moveTo(dropped);
@@ -27,23 +27,21 @@ var roleHauler = {
         if (!canHarvest) {
 
           var harvesters = _.filter(Game.creeps, function(c) {
-            return c.memory.role == "harvester" && c.carry.energy > 0
+            return c.memory.role == "harvester" && c.carry.energy > 20
           });
 
-          try {
-            var h = creep.pos.findClosestByPath(harvesters);
-            if (h) {
-              if(utils.distance(creep, h) > 1) {
-                creep.moveTo(h);
-              }
-              else {
-                var errCode = h.drop(RESOURCE_ENERGY, Math.min(h.carry.energy, creep.carryCapacity));
-                h.say("drop : "+ errCode);
-              }
+          var h = creep.pos.findClosestByPath(harvesters);
+          if (h) {
+            if(utils.distance(creep, h) > 1) {
+              creep.moveTo(h);
             }
-          } catch (e) {
-            console.log(e.message);
-            /* handle error */
+            else {
+              var errCode = h.drop(RESOURCE_ENERGY, Math.min(h.carry.energy, creep.carryCapacity));
+              h.say("drop : "+ errCode);
+            }
+          } else {
+            creep.memory.status = "transfering";
+            run(creep);
           }
         }
       }
