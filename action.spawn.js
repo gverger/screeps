@@ -10,14 +10,14 @@ var actionSpawn = {
     if (!nextRole)
       return;
 
-    if (nextRole == "harvester") {
+    if (this.lockForRole(nextRole)) {
       lock.lockAllResources(spawn);
     }
     var body = this.bodyFor(spawn, nextRole);
     if (spawn.canCreateCreep(body) == OK) {
       var creep = spawn.createCreep(body, undefined, { role: nextRole});
       console.log("New " + nextRole + " created.");
-      if (nextRole == "harvester") {
+      if (this.lockForRole(nextRole)) {
         lock.releaseAllResources(spawn);
       }
     }
@@ -25,7 +25,8 @@ var actionSpawn = {
 
   bodyFor: function(spawn, role) {
     var maxEnergy = spawn.room.energyCapacityAvailable;
-    if (role == "harvester" && this.nbOf("harvester") == 0) {
+    if ((role == "harvester" && this.nbOf("harvester") == 0) ||
+        (role == "hauler" && this.nbOf("harvester") > 0 && this.nbOf("hauler") == 0 && spawn.room.energyAvailable > (BODYPART_COST[CARRY] + BODYPART_COST[MOVE]))) {
       maxEnergy = spawn.room.energyAvailable;
     }
 
@@ -52,6 +53,10 @@ var actionSpawn = {
     return body;
   },
 
+  lockForRole: function(roleName) {
+    return roleName == "harvester" || roleName == "hauler";
+  },
+
   nbOf: function(roleName) {
     return _(Game.creeps).filter({ memory: { role:roleName} }).size();
   },
@@ -63,6 +68,7 @@ var actionSpawn = {
   whatNext: function(spawn) {
     var max = {};
     max['harvester'] = 3;
+    max['hauler'] = 2;
     max['upgrader'] = 4;
     max['builder'] = 0;
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
@@ -75,7 +81,6 @@ var actionSpawn = {
         max['upgrader'] = 0;
       }
     }
-    max['hauler'] = 2;
     max['repairer'] = 1;
 
     var nbOfCreeps = _.countBy(_.filter(Game.creeps, { room: spawn.room }), 'memory.role');

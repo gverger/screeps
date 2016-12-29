@@ -1,4 +1,6 @@
+var eta = require("utils.eta");
 var utils = require("utils");
+var lock = require("lock");
 var roleHauler = {
   updateStatus: function(creep) {
     if (creep.carry.energy == creep.carryCapacity) {
@@ -14,8 +16,26 @@ var roleHauler = {
 
     if(creep.memory.status == "filling") {
       var dropped = creep.pos.findClosestByPath(FIND_DROPPED_ENERGY);
-      if (dropped != null) {
-        if(creep.pickup(dropped) == ERR_NOT_IN_RANGE) {
+      var can_lock = false;
+      if (dropped != undefined && dropped != null) {
+        var currentLock = creep.memory.lock;
+        if (currentLock == dropped.id) {
+          can_lock = true;
+        }
+        else {
+          var ttd = eta.timeToDestination(creep, dropped);
+          can_lock = dropped.amount > ttd && lock.lock(creep, dropped, Game.time + ttd);
+          if (can_lock) {
+            lock.remove(currentLock);
+          }
+        }
+      }
+      if (can_lock) {
+        var pickup = creep.pickup(dropped);
+        if (pickup == OK) {
+          lock.release(creep, dropped);
+        }
+        if(pickup == ERR_NOT_IN_RANGE) {
           creep.moveTo(dropped);
         }
       } else {
@@ -44,11 +64,16 @@ var roleHauler = {
         }
       }
     }
-     if (creep.memory.status == "transfering") {
-      require("action.transfer.energy").transfer(creep, function(s) {
-        return [STRUCTURE_SPAWN, STRUCTURE_EXTENSION].includes(s.structureType) ||
-          s.structureType == STRUCTURE_CONTAINER && !utils.isHarvestingContainer(s)
+    if (creep.memory.status == "transfering") {
+      var transferEnergy = require("action.transfer.energy");
+      var transferToExtenstion = transferEnergy.transfer(creep, function(s) {
+        return [STRUCTURE_SPAWN, STRUCTURE_EXTENSION].includes(s.structureType)
       });
+      if (!transferToExtenstion) {
+        transferEnergy.transfer(creep, function(s) {
+          return s.structureType == STRUCTURE_CONTAINER && !utils.isHarvestingContainer(s)
+        });
+      }
     }
   }
 };

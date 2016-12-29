@@ -133,6 +133,8 @@ var lock = {
   },
 
   structureToString: function(object) {
+    if (!object)
+      return "[]";
     return object.structureType + this.posToString(object);
   },
 

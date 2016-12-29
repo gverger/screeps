@@ -6,10 +6,14 @@ var actionTransferEnergy = {
       structures = _.filter(structures, filter);
     if (structures != "") {
       var s = creep.pos.findClosestByPath(structures);
+      if (s !== null)
+        creep.say("t:" + s.pos.x + " " + s.pos.y);
       if(creep.transfer(s, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
         creep.moveTo(s);
       }
+      return true;
     }
+    return false;
   }
 };
 
