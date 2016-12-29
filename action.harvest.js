@@ -52,6 +52,9 @@ var actionHarvest = {
 
   goHarvest: function(creep, structure) {
     var errCode = creep.withdraw(structure, RESOURCE_ENERGY );
+    if (errCode == OK) {
+      lock.releaseCreep(creep);
+    }
     if(errCode == ERR_NOT_IN_RANGE) {
       creep.moveTo(structure);
     }
