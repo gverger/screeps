@@ -18,7 +18,7 @@ var eta = {
         terrain = "road";
       }
       var terrainMultiplier = this.terrainMult(terrain);
-      time += Math.ceil(terrainMultiplier * weight / nbOfMoves)
+      time += Math.max(1, Math.ceil(terrainMultiplier * weight / nbOfMoves));
     }
     return time;
   },
