@@ -71,7 +71,8 @@ var roleHauler = {
       });
       if (!transferToExtenstion) {
         transferEnergy.transfer(creep, function(s) {
-          return s.structureType == STRUCTURE_CONTAINER && !utils.isHarvestingContainer(s)
+          return s.structureType == STRUCTURE_CONTAINER && !utils.isHarvestingContainer(s) ||
+            s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity;
         });
       }
     }

@@ -36,12 +36,12 @@ var actionSpawn = {
 
     if (role == "hauler")
       bodyParts = [CARRY, MOVE];
-    else if (role == "harvester") {
-      body = [CARRY, MOVE];
-      bodyParts = [WORK];
-      maxEnergy = Math.min(maxEnergy, BODYPART_COST[CARRY] + BODYPART_COST[MOVE] + 5*BODYPART_COST[WORK]);
-      energyNeeded = BODYPART_COST[CARRY] + BODYPART_COST[MOVE];
-    }
+    // else if (role == "harvester") {
+    //   body = [CARRY, MOVE];
+    //   bodyParts = [WORK];
+    //   maxEnergy = Math.min(maxEnergy, BODYPART_COST[CARRY] + BODYPART_COST[MOVE] + 5*BODYPART_COST[WORK]);
+    //   energyNeeded = BODYPART_COST[CARRY] + BODYPART_COST[MOVE];
+    // }
     while (energyNeeded <= maxEnergy) {
       for( let bodyPart of bodyParts) {
         energyNeeded += BODYPART_COST[bodyPart];
@@ -67,13 +67,13 @@ var actionSpawn = {
    **/
   whatNext: function(spawn) {
     var max = {};
-    max['harvester'] = 3;
+    max['harvester'] = 2;
     max['hauler'] = 2;
-    max['upgrader'] = 4;
+    max['upgrader'] = 3;
     max['builder'] = 0;
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
       max['builder'] = 2;
-      max['upgrader'] = 3;
+      max['upgrader'] = 2;
       if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES, {
         filter: (s) => { return s.structureType == STRUCTURE_EXTENSION }
       }).length > 0) {
