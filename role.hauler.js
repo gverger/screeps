@@ -2,8 +2,12 @@ var eta = require("utils.eta");
 var utils = require("utils");
 var lock = require("lock");
 var roleHauler = {
+  carriedWeight: function(creep) {
+    return _.sum(creep.carry);
+  },
+
   updateStatus: function(creep) {
-    if (creep.carry.energy == creep.carryCapacity) {
+    if (this.carriedWeight(creep) == creep.carryCapacity) {
       creep.memory.status = "transfering";
     }
     else if (creep.carry.energy == 0) {
@@ -36,19 +40,23 @@ var roleHauler = {
           lock.release(creep, dropped);
         }
         if(pickup == ERR_NOT_IN_RANGE) {
-          creep.moveTo(dropped);
+          creep.moveTo(dropped, {visualizePathStyle: {}});
         }
       } else {
         var canHarvest = require("action.harvest").harvestAnything(creep, function(s) {
           return s.structureType == STRUCTURE_STORAGE ||
-            (s.structureType == STRUCTURE_CONTAINER && utils.isHarvestingContainer(s));
+            (s.structureType == STRUCTURE_CONTAINER && utils.isHarvestingContainer(s) && s.storeCapacity / s.store[RESOURCE_ENERGY] < 3 );
         });
 
         if (!canHarvest) {
 
           var harvesters = _.filter(Game.creeps, function(c) {
-            return c.memory.role == "harvester" && c.carry.energy > 40
+            let containers = c.pos.findInRange(FIND_STRUCTURES, 1, {
+              filter: { structureType: STRUCTURE_CONTAINER }
+            });
+            return c.memory.role == "harvester" && c.carry.energy > 40 && containers.length == 0;
           });
+          creep.say('HV:'+harvesters.length);
 
           var h = creep.pos.findClosestByPath(harvesters);
           if (h) {
@@ -56,7 +64,8 @@ var roleHauler = {
               creep.moveTo(h);
             }
             else {
-              var errCode = h.drop(RESOURCE_ENERGY, Math.min(h.carry.energy, creep.carryCapacity));
+              var errCode = h.drop(RESOURCE_ENERGY,
+                  Math.min(h.carry.energy, creep.carryCapacity - this.carriedWeight(creep)));
             }
           } else {
             creep.memory.status = "transfering";

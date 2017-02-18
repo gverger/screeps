@@ -1,5 +1,5 @@
-var utils = require("utils");
-var lock = require("lock");
+var utils = require('utils');
+var lock = require('lock');
 var actionSpawn = {
   /**
    * @param {Spawn} spawn
@@ -7,8 +7,9 @@ var actionSpawn = {
   spawn: function(spawn) {
     // this.debug_info();
     var nextRole = this.whatNext(spawn);
-    if (!nextRole)
+    if (!nextRole) {
       return;
+    }
 
     if (this.lockForRole(nextRole)) {
       lock.lockAllResources(spawn);
@@ -16,7 +17,7 @@ var actionSpawn = {
     var body = this.bodyFor(spawn, nextRole);
     if (spawn.canCreateCreep(body) == OK) {
       var creep = spawn.createCreep(body, undefined, { role: nextRole});
-      console.log("New " + nextRole + " created.");
+      console.log('New ' + nextRole + ' created.');
       if (this.lockForRole(nextRole)) {
         lock.releaseAllResources(spawn);
       }
@@ -25,8 +26,9 @@ var actionSpawn = {
 
   bodyFor: function(spawn, role) {
     var maxEnergy = spawn.room.energyCapacityAvailable;
-    if ((role == "harvester" && this.nbOf("harvester") == 0) ||
-        (role == "hauler" && this.nbOf("harvester") > 0 && this.nbOf("hauler") == 0 && spawn.room.energyAvailable > (BODYPART_COST[CARRY] + BODYPART_COST[MOVE]))) {
+    if ((role == 'harvester' && this.nbOf('harvester') == 0) ||
+        (role == 'hauler' && this.nbOf('harvester') > 0 && this.nbOf('hauler') == 0 &&
+         spawn.room.energyAvailable > (BODYPART_COST[CARRY] + BODYPART_COST[MOVE]))) {
       maxEnergy = spawn.room.energyAvailable;
     }
 
@@ -34,19 +36,20 @@ var actionSpawn = {
     var bodyParts = [CARRY, WORK, MOVE];
     var energyNeeded = 0;
 
-    if (role == "hauler")
+    if (role == 'hauler') {
       bodyParts = [CARRY, MOVE];
-    // else if (role == "harvester") {
-    //   body = [CARRY, MOVE];
-    //   bodyParts = [WORK];
-    //   maxEnergy = Math.min(maxEnergy, BODYPART_COST[CARRY] + BODYPART_COST[MOVE] + 5*BODYPART_COST[WORK]);
-    //   energyNeeded = BODYPART_COST[CARRY] + BODYPART_COST[MOVE];
-    // }
+    } else if (role == 'harvester') {
+      body = [CARRY, MOVE];
+      bodyParts = [WORK, WORK, WORK, WORK, WORK, MOVE];
+      maxEnergy = Math.min(maxEnergy, BODYPART_COST[CARRY] + 2*BODYPART_COST[MOVE] + 5*BODYPART_COST[WORK]);
+      energyNeeded = BODYPART_COST[CARRY] + BODYPART_COST[MOVE];
+    }
     while (energyNeeded <= maxEnergy && body.length < 50) {
-      for( let bodyPart of bodyParts) {
+      for (let bodyPart of bodyParts) {
         energyNeeded += BODYPART_COST[bodyPart];
-        if (energyNeeded > maxEnergy || body.length >= 50)
+        if (energyNeeded > maxEnergy || body.length >= 50) {
           break;
+        }
         body.push(bodyPart);
       }
     }
@@ -67,9 +70,9 @@ var actionSpawn = {
    **/
   whatNext: function(spawn) {
     var max = {};
-    max['harvester'] = 1;
+    max['harvester'] = 2;
     max['hauler'] = 1;
-    max['upgrader'] = 1;
+    max['upgrader'] = 2;
     max['builder'] = 0;
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
       max['builder'] = 1;

@@ -2,10 +2,10 @@ var utils = require("utils");
 
 var actionBuildRoads = {
   buildRoads: function(room) {
-    this.usedPoints(room);
     if (Memory.roads) {
       return null;
     }
+    this.usedPoints(room);
     var sources = room.find(FIND_SOURCES);
     for (let source of sources) {
       this.buildTheRoad(room, room.controller.pos, source.pos);

@@ -17,7 +17,7 @@ var roleBuilder = {
       var harvestAction = require("action.harvest");
       var canHarvest = harvestAction.harvestAnything(creep);
       if (!canHarvest)
-        harvestAction.harvest(creep);
+        return;
     }
     else if (creep.memory.status == "building") {
       var site = _.reduce(creep.room.find(FIND_MY_CONSTRUCTION_SITES, {
