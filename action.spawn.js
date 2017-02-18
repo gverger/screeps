@@ -42,10 +42,10 @@ var actionSpawn = {
     //   maxEnergy = Math.min(maxEnergy, BODYPART_COST[CARRY] + BODYPART_COST[MOVE] + 5*BODYPART_COST[WORK]);
     //   energyNeeded = BODYPART_COST[CARRY] + BODYPART_COST[MOVE];
     // }
-    while (energyNeeded <= maxEnergy) {
+    while (energyNeeded <= maxEnergy && body.length < 50) {
       for( let bodyPart of bodyParts) {
         energyNeeded += BODYPART_COST[bodyPart];
-        if (energyNeeded > maxEnergy)
+        if (energyNeeded > maxEnergy || body.length >= 50)
           break;
         body.push(bodyPart);
       }
@@ -67,17 +67,17 @@ var actionSpawn = {
    **/
   whatNext: function(spawn) {
     var max = {};
-    max['harvester'] = 2;
-    max['hauler'] = 2;
-    max['upgrader'] = 3;
+    max['harvester'] = 1;
+    max['hauler'] = 1;
+    max['upgrader'] = 1;
     max['builder'] = 0;
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
-      max['builder'] = 2;
-      max['upgrader'] = 2;
+      max['builder'] = 1;
+      max['upgrader'] = 1;
       if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES, {
         filter: (s) => { return s.structureType == STRUCTURE_EXTENSION }
       }).length > 0) {
-        max['builder'] = 4;
+        max['builder'] = 2;
         max['upgrader'] = 0;
       }
     }
