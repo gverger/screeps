@@ -9,7 +9,7 @@ var utils = {
 
   roles: function() {
     if (!this.cachedRoles) {
-      this.cachedRoles = ["harvester", "hauler", "upgrader", "builder", "repairer"];
+      this.cachedRoles = ['harvester', 'hauler', 'upgrader', 'builder', 'repairer'];
     }
     return this.cachedRoles;
   },
@@ -17,7 +17,7 @@ var utils = {
   _roles: {},
   /** @param {string} roleName **/
   role: function(roleName) {
-    if(!this._roles[roleName]) {
+    if (!this._roles[roleName]) {
       this._roles[roleName] = require('role.' + roleName);
     }
     return this._roles[roleName];
@@ -25,8 +25,8 @@ var utils = {
 
   structuresNeedingEnergyTypes: function() {
     if (!this.__structuresNeedingEnergyTypes) {
-      this.__structuresNeedingEnergyTypes =
-        [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
+      this.__structuresNeedingEnergyTypes = [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_EXTENSION,
+        STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
     }
     return this.__structuresNeedingEnergyTypes;
   },
@@ -42,7 +42,8 @@ var utils = {
       this.__structuresNeedingEnergy = room.find(FIND_STRUCTURES, {
         filter: (s) => {
           return (structureEnergyTypes.includes(s.structureType) && s.energy < s.energyCapacity) ||
-            (structureStorageTypes.includes(s.structureType) && s.store[RESOURCE_ENERGY] < s.storeCapacity);
+            (structureStorageTypes.includes(s.structureType) &&
+             s.store[RESOURCE_ENERGY] < s.storeCapacity);
         }
       });
     }
@@ -68,22 +69,25 @@ var utils = {
   },
 
   isHarvestingContainer: function(structure) {
-    if (structure.structureType != STRUCTURE_CONTAINER)
+    if (structure.structureType != STRUCTURE_CONTAINER) {
       return false;
-    if (this.harvestingContainers(structure.room).includes(structure.id))
+    }
+    if (this.harvestingContainers(structure.room).includes(structure.id)) {
       return true;
+    }
     return false;
   },
 
   harvestingContainers: function(room) {
     if (!this.__harvestingContainers) {
-      var containers = room.find(FIND_STRUCTURES, { filter: s => s.structureType == STRUCTURE_CONTAINER });
+      var containers = room.find(FIND_STRUCTURES, { filter: {structureType: STRUCTURE_CONTAINER}});
       var sources = room.find(FIND_SOURCES);
       this.__harvestingContainers = [];
       for (let c of containers) {
         var source = c.pos.findClosestByRange(sources);
-        if (this.distance(c, source) <= 2)
+        if (this.distance(c, source) <= 2) {
           this.__harvestingContainers.push(c.id);
+        }
       }
     }
     return this.__harvestingContainers;
@@ -94,7 +98,10 @@ var utils = {
    * @param {RoomObject} object2
    **/
   distance: function(object1, object2) {
-    return Math.max(Math.abs(object1.pos.x - object2.pos.x), Math.abs(object1.pos.y - object2.pos.y));
+    return Math.max(
+        Math.abs(object1.pos.x - object2.pos.x),
+        Math.abs(object1.pos.y - object2.pos.y)
+        );
   },
 
   clean: function() {
@@ -103,4 +110,4 @@ var utils = {
   }
 };
 
-module.exports = utils
+module.exports = utils;

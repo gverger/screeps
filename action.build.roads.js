@@ -1,4 +1,4 @@
-var utils = require("utils");
+var utils = require('utils');
 
 var actionBuildRoads = {
   buildRoads: function(room) {
@@ -15,7 +15,7 @@ var actionBuildRoads = {
     }
   },
 
-  buildTheRoad: function(room,pos1, pos2) {
+  buildTheRoad: function(room, pos1, pos2) {
     var path = pos1.findPathTo(pos2, { ignoreCreeps: true });
     for (i = 0; i < path.length; i++) {
       var step = path[i];
@@ -23,19 +23,19 @@ var actionBuildRoads = {
     };
   },
 
-
   /* @function usedPoints
    * @param {Room}
    */
   usedPoints: function(room) {
-    if (room.memory.usedPoints == undefined)
+    if (room.memory.usedPoints == undefined) {
       room.memory.usedPoints = (new PathFinder.CostMatrix).serialize();
+    }
     /**
      * @type {PathFinder.CostMatrix}
      **/
     var points = PathFinder.CostMatrix.deserialize(room.memory.usedPoints);
     var creeps = Game.creeps;
-    for(var name in creeps) {
+    for (var name in creeps) {
       /**
        * @type {Creep}
        **/
@@ -56,11 +56,12 @@ var actionBuildRoads = {
    * @param {Room} room
    **/
   bestRoutePoint: function(matrix, room) {
-    if (Game.time % 10 != 0)
+    if (Game.time % 10 != 0) {
       return;
+    }
     var max = 0;
-    var max_x = 0;
-    var max_y = 0;
+    var maxX = 0;
+    var maxY = 0;
     var isRoad = new PathFinder.CostMatrix;
     var roads = room.find(FIND_STRUCTURES);
     for (let road of roads) {
@@ -68,14 +69,14 @@ var actionBuildRoads = {
     }
     for (var x = 0; x < 50; x++) {
       for (var y = 0; y < 50; y++) {
-        if (isRoad.get(x, y))
+        if (isRoad.get(x, y)) {
           continue;
-
-        var value = matrix.get(x, y)
+        }
+        var value = matrix.get(x, y);
         if (max < value) {
           max = value;
-          max_x = x;
-          max_y = y;
+          maxX = x;
+          maxY = y;
         }
         // if (value > 0) {
         //   matrix.set(x, y, value - 1);
@@ -83,7 +84,7 @@ var actionBuildRoads = {
       }
     }
     if (max > 10) {
-      room.createConstructionSite(max_x, max_y, STRUCTURE_ROAD);
+      room.createConstructionSite(maxX, maxY, STRUCTURE_ROAD);
     }
   }
 };

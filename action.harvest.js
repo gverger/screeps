@@ -32,7 +32,8 @@ var actionHarvest = {
     var s = this.lockedResource(creep);
     if (s != undefined) {
       if ((s.energyCapacity && s.energy == 0) ||
-          ([STRUCTURE_STORAGE, STRUCTURE_CONTAINER].includes(s.structureType) && s.store[RESOURCE_ENERGY] == 0) ||
+          ([STRUCTURE_STORAGE, STRUCTURE_CONTAINER].includes(s.structureType) &&
+           s.store[RESOURCE_ENERGY] == 0) ||
           (s.amount == 0)) {
         lock.release(creep, s);
       } else {
@@ -79,27 +80,29 @@ var actionHarvest = {
   },
 
   goHarvest: function(creep, structure) {
-    var errCode = creep.withdraw(structure, RESOURCE_ENERGY );
+    var errCode = creep.withdraw(structure, RESOURCE_ENERGY);
     if (structure.amount) {
       errCode = creep.pickup(structure);
     }
     if (errCode == OK) {
       lock.releaseCreep(creep);
     }
-    if(errCode == ERR_NOT_IN_RANGE) {
+    if (errCode == ERR_NOT_IN_RANGE) {
       creep.moveTo(structure);
     }
-    if (errCode != OK && errCode != ERR_NOT_IN_RANGE)
+    if (errCode != OK && errCode != ERR_NOT_IN_RANGE) {
       creep.say(errCode);
+    }
   },
 
   lockedResource: function(creep) {
-    if (creep.memory.lock == undefined)
+    if (creep.memory.lock == undefined) {
       return undefined;
+    }
     var resource = Game.getObjectById(creep.memory.lock);
     if (!resource) {
       lock.remove(creep.memory.lock);
-      delete creep.memory.lock
+      delete creep.memory.lock;
     }
     return resource;
   }
