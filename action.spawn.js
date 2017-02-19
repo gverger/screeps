@@ -70,10 +70,14 @@ var actionSpawn = {
    **/
   whatNext: function(spawn) {
     var max = {};
-    max['harvester'] = 2;
-    max['hauler'] = 1;
+    max['harvester'] = 4;
+    max['hauler'] = 2;
     max['upgrader'] = 2;
     max['builder'] = 0;
+    if (utils.harvestedSources(spawn.room).length == 2) {
+      max['harvester'] = 2
+        max['hauler'] = 1;
+    }
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
       max['builder'] = 1;
       max['upgrader'] = 1;

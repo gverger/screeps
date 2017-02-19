@@ -72,9 +72,6 @@ var utils = {
    * @param {Source} source
    **/
   isHarvestedSource: function(source) {
-    if (!Source.isPrototypeOf(source)) {
-      return false;
-    }
     if (this.harvestedSources(source.room).includes(source.id)) {
       return true;
     }

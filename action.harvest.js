@@ -1,12 +1,12 @@
-var utils = require("utils");
-var eta = require("utils.eta");
-var lock = require("lock");
+var utils = require('utils');
+var eta = require('utils.eta');
+var lock = require('lock');
 
 var actionHarvest = {
   harvest: function(creep) {
     var source = this.lockedResource(creep);
     if (source) {
-      if (source.energy == 0) {
+      if (source.energy == 0 || !utils.isHarvestedSource(source)) {
         lock.release(creep, source);
         source = null;
       }
