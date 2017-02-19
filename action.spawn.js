@@ -38,7 +38,7 @@ var actionSpawn = {
 
     if (role == 'hauler') {
       bodyParts = [CARRY, MOVE];
-    } else if (role == 'harvester') {
+    } else if (role == 'harvester' && utils.harvestedSources(spawn.room).length == 2) {
       body = [CARRY, MOVE];
       bodyParts = [WORK, WORK, WORK, WORK, WORK, MOVE];
       maxEnergy = Math.min(maxEnergy, BODYPART_COST[CARRY] + 2*BODYPART_COST[MOVE] + 5*BODYPART_COST[WORK]);

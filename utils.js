@@ -78,21 +78,33 @@ var utils = {
     return false;
   },
 
+  computeHarvestContainers: function(room) {
+    var containers = room.find(FIND_STRUCTURES, { filter: {structureType: STRUCTURE_CONTAINER}});
+    var sources = room.find(FIND_SOURCES);
+    this.__harvestingContainers = [];
+    this.__harvestedSources = [];
+    for (let c of containers) {
+      var source = c.pos.findClosestByRange(sources);
+      if (this.distance(c, source) <= 2) {
+        this.__harvestingContainers.push(c.id);
+        this.__harvestedSources.push(source.id);
+      }
+    }
+  },
+
   harvestingContainers: function(room) {
     if (!this.__harvestingContainers) {
-      var containers = room.find(FIND_STRUCTURES, { filter: {structureType: STRUCTURE_CONTAINER}});
-      var sources = room.find(FIND_SOURCES);
-      this.__harvestingContainers = [];
-      for (let c of containers) {
-        var source = c.pos.findClosestByRange(sources);
-        if (this.distance(c, source) <= 2) {
-          this.__harvestingContainers.push(c.id);
-        }
-      }
+      this.computeHarvestContainers(room);
     }
     return this.__harvestingContainers;
   },
 
+  harvestedSources: function(room) {
+    if (!this.__harvestedSources) {
+      this.computeHarvestContainers(room);
+    }
+    return this.__harvestedSources;
+  },
   /**
    * @param {RoomObject} object1
    * @param {RoomObject} object2
