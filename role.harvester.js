@@ -20,20 +20,18 @@ var roleHarvester = {
       let harvested = require('action.harvest').harvest(creep);
       if (harvested) {
         require('action.transfer.energy').transfer(creep);
-        creep.cancelOrder('moveTo');
+        creep.cancelOrder('move');
       }
     }
   },
 
   repairContainer: function(creep) {
-    if (creep.carry.energy == creep.carryCapacity) {
+    if (creep.carry.energy > 0) {
       let containers = creep.pos.findInRange(FIND_STRUCTURES, 1, {
         filter: { structureType: STRUCTURE_CONTAINER }
       });
 
-      let container = _.filter(containers, function(c) {
-        return c.hitsMax / c.hits > 2;
-      })[0];
+      let container = _.filter(containers, function(c) { return c.hitsMax / c.hits > 2; })[0];
       if (container) {
         creep.repair(container);
         return true;

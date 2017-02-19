@@ -56,7 +56,6 @@ var roleHauler = {
             });
             return c.memory.role == "harvester" && c.carry.energy > 40 && containers.length == 0;
           });
-          creep.say('HV:'+harvesters.length);
 
           var h = creep.pos.findClosestByPath(harvesters);
           if (h) {

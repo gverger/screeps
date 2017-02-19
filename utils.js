@@ -80,7 +80,7 @@ var utils = {
       var containers = room.find(FIND_STRUCTURES, { filter: s => s.structureType == STRUCTURE_CONTAINER });
       var sources = room.find(FIND_SOURCES);
       this.__harvestingContainers = [];
-      for (c of containers) {
+      for (let c of containers) {
         var source = c.pos.findClosestByRange(sources);
         if (this.distance(c, source) <= 2)
           this.__harvestingContainers.push(c.id);

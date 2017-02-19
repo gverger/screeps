@@ -45,7 +45,7 @@ var actionHarvest = {
       structures = _.filter(structures, filter);
     }
     if (structures != '') {
-      lockedStructure = this.lockClosest(creep, structures);
+      let lockedStructure = this.lockClosest(creep, structures);
       if (lockedStructure) {
         this.goHarvest(creep, lockedStructure);
         return true;
@@ -88,7 +88,6 @@ var actionHarvest = {
     }
     if(errCode == ERR_NOT_IN_RANGE) {
       creep.moveTo(structure);
-      creep.say("h:" + structure.pos.x + " " + structure.pos.y);
     }
     if (errCode != OK && errCode != ERR_NOT_IN_RANGE)
       creep.say(errCode);
