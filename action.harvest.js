@@ -19,6 +19,9 @@ var actionHarvest = {
     let sources = creep.room.find(FIND_SOURCES_ACTIVE);
     let lockedSource = this.lockClosest(creep, sources);
     if (lockedSource) {
+      if (!utils.isHarvestedSource(lockedSource)) {
+        lock.release(creep, lockedSource);
+      }
       if (creep.harvest(lockedSource) == ERR_NOT_IN_RANGE) {
         creep.moveTo(lockedSource);
         return false;

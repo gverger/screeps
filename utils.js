@@ -68,6 +68,19 @@ var utils = {
     return this.__structuresGivingEnergy;
   },
 
+  /**
+   * @param {Source} source
+   **/
+  isHarvestedSource: function(source) {
+    if (!Source.isPrototypeOf(source)) {
+      return false;
+    }
+    if (this.harvestedSources(source.room).includes(source.id)) {
+      return true;
+    }
+    return false;
+  },
+
   isHarvestingContainer: function(structure) {
     if (structure.structureType != STRUCTURE_CONTAINER) {
       return false;
