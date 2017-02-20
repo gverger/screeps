@@ -12,6 +12,9 @@ var roleUpgrader = {
   run: function(creep) {
     this.updateStatus(creep);
 
+    if (this.repairContainer(creep)) {
+      return;
+    }
     if (creep.memory.status == 'filling') {
       require('action.harvest').harvestAnything(creep);
     } else if (creep.memory.status == 'upgrading') {
@@ -20,6 +23,21 @@ var roleUpgrader = {
         creep.moveTo(controller);
       }
     }
+  },
+
+  repairContainer: function(creep) {
+    if (creep.carry.energy > 0) {
+      let containers = creep.pos.findInRange(FIND_STRUCTURES, 1, {
+        filter: { structureType: STRUCTURE_CONTAINER }
+      });
+
+      let container = _.filter(containers, function(c) { return c.hitsMax / c.hits > 2; })[0];
+      if (container) {
+        creep.repair(container);
+        return true;
+      }
+    }
+    return false;
   }
 };
 

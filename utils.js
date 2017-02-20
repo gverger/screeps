@@ -1,3 +1,4 @@
+// var eta = require('utils.eta');
 var utils = {
   /**
    * @param {Room} room
@@ -72,6 +73,7 @@ var utils = {
    * @param {Source} source
    **/
   isHarvestedSource: function(source) {
+    return source.ticksToRegeneration * 10 >= source.energy;
     if (this.harvestedSources(source.room).includes(source.id)) {
       return true;
     }
@@ -124,6 +126,26 @@ var utils = {
         Math.abs(object1.pos.x - object2.pos.x),
         Math.abs(object1.pos.y - object2.pos.y)
         );
+  },
+
+  /**
+   * @param {RoomObject} room
+   **/
+  needMoreHarvesters: function(spawn) {
+    let room = spawn.room;
+    let harvesters = room.find(FIND_CREEPS, { filter:  { memory: { role: 'harvester' } } });
+    let nbWorkParts = _(harvesters).filter(function(h) {
+      // let timeToMoveToCurrentDestination = eta.timeToDestination(h, spawn.pos);
+      let timeToSpawn = h.body.length * 3;
+      return timeToSpawn < h.ticksToLive;
+    }).map('body').flatten().reduce(function(sum, p) {
+      if (p.type == 'work') {
+        return sum + 1;
+      }
+      return sum;
+    }, 0);
+    let nbSources = room.find(FIND_SOURCES).length;
+    return nbWorkParts < nbSources * 5;
   },
 
   clean: function() {

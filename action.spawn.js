@@ -14,7 +14,7 @@ var actionSpawn = {
     if (this.lockForRole(nextRole)) {
       lock.lockAllResources(spawn);
     }
-    var body = this.bodyFor(spawn, nextRole);
+    var body = this.bodyFor(spawn.room, nextRole);
     if (spawn.canCreateCreep(body) == OK) {
       var creep = spawn.createCreep(body, undefined, { role: nextRole});
       console.log('New ' + nextRole + ' created.');
@@ -24,12 +24,12 @@ var actionSpawn = {
     }
   },
 
-  bodyFor: function(spawn, role) {
-    var maxEnergy = spawn.room.energyCapacityAvailable;
+  bodyFor: function(room, role) {
+    var maxEnergy = room.energyCapacityAvailable;
     if ((role == 'harvester' && this.nbOf('harvester') == 0) ||
         (role == 'hauler' && this.nbOf('harvester') > 0 && this.nbOf('hauler') == 0 &&
-         spawn.room.energyAvailable > (BODYPART_COST[CARRY] + BODYPART_COST[MOVE]))) {
-      maxEnergy = spawn.room.energyAvailable;
+         room.energyAvailable > (BODYPART_COST[CARRY] + BODYPART_COST[MOVE]))) {
+      maxEnergy = room.energyAvailable;
     }
 
     var body = [];
@@ -38,7 +38,7 @@ var actionSpawn = {
 
     if (role == 'hauler') {
       bodyParts = [CARRY, MOVE];
-    } else if (role == 'harvester' && utils.harvestedSources(spawn.room).length == 2) {
+    } else if (role == 'harvester' && utils.harvestedSources(room).length == 2) {
       body = [CARRY, MOVE];
       bodyParts = [WORK, WORK, WORK, WORK, WORK, MOVE];
       maxEnergy = Math.min(maxEnergy, BODYPART_COST[CARRY] + 2*BODYPART_COST[MOVE] + 5*BODYPART_COST[WORK]);
@@ -70,14 +70,14 @@ var actionSpawn = {
    **/
   whatNext: function(spawn) {
     var max = {};
-    max['harvester'] = 4;
-    max['hauler'] = 2;
-    max['upgrader'] = 2;
+    max['harvester'] = 2;
+    max['hauler'] = 1;
+    max['upgrader'] = 4;
     max['builder'] = 0;
-    if (utils.harvestedSources(spawn.room).length == 2) {
-      max['harvester'] = 2
-        max['hauler'] = 1;
+    if (utils.needMoreHarvesters(spawn)) {
+      max['harvester'] = this.nbOf('harvester') + 1;
     }
+    max['hauler'] = this.nbOf('harvester') / 2 + 1;
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
       max['builder'] = 1;
       max['upgrader'] = 1;

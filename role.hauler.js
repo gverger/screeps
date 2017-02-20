@@ -6,8 +6,11 @@ var roleHauler = {
     return _.sum(creep.carry);
   },
 
+  /**
+   * @param {Creep} creep
+   **/
   updateStatus: function(creep) {
-    if (this.carriedWeight(creep) == creep.carryCapacity) {
+    if (creep.ticksToLive < 50 || this.carriedWeight(creep) == creep.carryCapacity) {
       creep.memory.status = 'transfering';
     } else if (creep.carry.energy == 0) {
       creep.memory.status = 'filling';
