@@ -1,11 +1,14 @@
 var utils = require('utils');
 
 var actionBuildRoads = {
+  /**
+   * @param {RoomObject} room
+   **/
   buildRoads: function(room) {
-    if (Memory.roads) {
+    if (Game.time % 10 != 0) {
       return null;
     }
-    this.usedPoints(room);
+    //this.usedPoints(room);
     var sources = room.find(FIND_SOURCES);
     for (let source of sources) {
       this.buildTheRoad(room, room.controller.pos, source.pos);
@@ -16,7 +19,7 @@ var actionBuildRoads = {
   },
 
   buildTheRoad: function(room, pos1, pos2) {
-    var path = pos1.findPathTo(pos2, { ignoreCreeps: true });
+    var path = pos1.findPathTo(pos2, { ignoreCreeps: true, ignoreRoads: true });
     for (i = 0; i < path.length; i++) {
       var step = path[i];
       room.createConstructionSite(step.x, step.y, STRUCTURE_ROAD);

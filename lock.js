@@ -145,6 +145,20 @@ var lock = {
 
   log: function(message) {
     // console.log('['+Game.time+']'+message);
+  },
+
+  /**
+   * @param {RoomObject} room
+   **/
+  visualDebug: function(room) {
+    for (let key in Memory.lock) {
+      var locked = Memory.lock[key];
+      var creep = Game.getObjectById(locked.entity);
+      var structure = Game.getObjectById(key);
+      if (creep && structure) {
+        room.visual.line(creep.pos.x, creep.pos.y, structure.pos.x, structure.pos.y);
+      }
+    }
   }
 };
 

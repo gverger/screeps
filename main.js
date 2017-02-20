@@ -3,6 +3,7 @@ var utils = require('utils');
 module.exports = {
   loop: function() {
     var room = Game.spawns['Spawn1'].room;
+    require('lock').visualDebug(room);
     require('action.memory.clean').clean();
     require('action.spawn').spawn(Game.spawns.Spawn1);
     require('action.build.roads').buildRoads(room);
