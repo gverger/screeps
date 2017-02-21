@@ -16,7 +16,33 @@ var actionHarvest = {
       }
       return true;
     }
-    let sources = creep.room.find(FIND_SOURCES_ACTIVE);
+    let sources = Game.rooms[creep.memory.roomName].find(FIND_SOURCES_ACTIVE, {
+      filter: function(source) {
+        let harvesters =
+          source.pos.findInRange(FIND_MY_CREEPS, 1, {
+            filter: function(c) {
+              return c.memory.role === 'harvester' && c.id != creep.id;
+            }});
+        let nbWorkParts = _.sum(harvesters, function(c) { return c.getActiveBodyparts(WORK); });
+        if (nbWorkParts >= 5) {
+          return false;
+        }
+
+        let nbOfPlains = 9 -
+          _.countBy(source.room.lookForAtArea(
+                LOOK_TERRAIN,
+                source.pos.y - 1,
+                source.pos.x - 1,
+                source.pos.y + 1,
+                source.pos.x + 1,
+                true
+                ), 'terrain').wall;
+
+        if (harvesters.length >= nbOfPlains) {
+          return false;
+        }
+        return true;
+      }});
     let lockedSource = this.lockClosest(creep, sources);
     if (lockedSource) {
       if (!utils.isHarvestedSource(lockedSource)) {
@@ -34,8 +60,9 @@ var actionHarvest = {
   harvestAnything: function(creep, filter) {
     var s = this.lockedResource(creep);
     if (s != undefined) {
-      if (filter && !filter(s))
+      if (filter && !filter(s)) {
         lock.release(creep, s);
+      }
       if ((s.energyCapacity && s.energy == 0) ||
           ([STRUCTURE_STORAGE, STRUCTURE_CONTAINER].includes(s.structureType) &&
            s.store[RESOURCE_ENERGY] == 0) ||
@@ -46,7 +73,7 @@ var actionHarvest = {
         return true;
       }
     }
-    var structures = utils.structuresGivingEnergy(creep.room);
+    var structures = utils.structuresGivingEnergy(Game.rooms[creep.memory.roomName]);
     if (filter) {
       structures = _.filter(structures, filter);
     }

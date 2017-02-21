@@ -1,9 +1,11 @@
 var roleHarvester = {
   updateStatus: function(creep) {
     let workParts = _.filter(creep.body, { type: WORK }).length;
-    if (creep.carry.energy + 2 * workParts > creep.carryCapacity) {
+    if (creep.memory.status !== 'transfering' &&
+        creep.carry.energy + 2 * workParts > creep.carryCapacity) {
       creep.memory.status = 'transfering';
-    } else if (creep.carry.energy == 0) {
+      require('lock').releaseCreep(creep);
+    } else if (creep.memory.status !== 'filling' && creep.carry.energy == 0) {
       creep.memory.status = 'filling';
     }
   },

@@ -10,8 +10,7 @@ var roleHauler = {
    * @param {Creep} creep
    **/
   updateStatus: function(creep) {
-    if (creep.memory.status !== 'transfering' &&
-        creep.ticksToLive < 50 || this.carriedWeight(creep) == creep.carryCapacity) {
+    if (creep.memory.status !== 'transfering' && this.carriedWeight(creep) == creep.carryCapacity) {
       lock.releaseCreep(creep);
       creep.memory.status = 'transfering';
     } else if (creep.memory.status !== 'filling' && creep.carry.energy == 0) {

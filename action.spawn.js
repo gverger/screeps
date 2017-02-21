@@ -17,9 +17,9 @@ var actionSpawn = {
     }
     var body = this.bodyFor(spawn.room, nextRole);
     if (spawn.canCreateCreep(body) == OK) {
-      var creep = spawn.createCreep(body, undefined, { role: nextRole});
+      var creep = spawn.createCreep(body, undefined, { role: nextRole, roomName: spawn.room.name});
       console.log('New ' + nextRole + ' created.');
-      if (this.lockForRole(nextRole)) {
+      if (!this.lockForRole(nextRole)) {
         lock.releaseAllResources(spawn);
       }
     }
@@ -27,8 +27,8 @@ var actionSpawn = {
 
   bodyFor: function(room, role) {
     var maxEnergy = room.energyCapacityAvailable;
-    if ((role == 'harvester' && this.nbOf('harvester') == 0) ||
-        (role == 'hauler' && this.nbOfNonSpawning('harvester') > 0 && this.nbOf('hauler') == 0 &&
+    if ((role == 'harvester' && this.nbOf(room, 'harvester') == 0) ||
+        (role == 'hauler' && this.nbOf(room, 'harvester') > 0 && this.nbOf(room, 'hauler') == 0 &&
          room.energyAvailable > (BODYPART_COST[CARRY] + BODYPART_COST[MOVE]))) {
       maxEnergy = room.energyAvailable;
     }
@@ -42,7 +42,8 @@ var actionSpawn = {
     } else if (role == 'harvester' && utils.harvestedSources(room).length == 2) {
       body = [CARRY, MOVE];
       bodyParts = [WORK, WORK, WORK, WORK, WORK, MOVE];
-      maxEnergy = Math.min(maxEnergy, BODYPART_COST[CARRY] + 2*BODYPART_COST[MOVE] + 5*BODYPART_COST[WORK]);
+      maxEnergy = Math.min(maxEnergy,
+          this.bodyCost([CARRY, MOVE, MOVE, WORK, WORK, WORK, WORK, WORK]));
       energyNeeded = BODYPART_COST[CARRY] + BODYPART_COST[MOVE];
     }
     while (energyNeeded <= maxEnergy && body.length < 50) {
@@ -57,18 +58,26 @@ var actionSpawn = {
     return body;
   },
 
+  bodyCost: function(body) {
+    return _.reduce(body, function(sum, part) {
+      return sum + BODYPART_COST[part];
+    }, 0);
+  },
+
   lockForRole: function(roleName) {
-    return roleName == "harvester" || roleName == "hauler";
+    return roleName == 'harvester' || roleName == 'hauler';
   },
 
-  nbOf: function(roleName) {
-    return _(Game.creeps).filter({ memory: { role: roleName} }).size();
+  nbOf: function(room, roleName) {
+    return _(Game.creeps).filter({ memory: { role: roleName, roomName: room.name} }).size();
   },
 
-  nbOfNonSpawning: function(roleName) {
-    return _(Game.creeps).filter(function(creep) {
-      return !creep.spawning && creep.memory.role === roleName;
-    }).size();
+  nbOfNonSpawning: function(room, roleName) {
+    return room.find(FIND_MY_CREEPS, {
+      filter: function(creep) {
+        return !creep.spawning && creep.memory.role === roleName &&
+          creep.memory.roomName === room.name;
+      }}).length;
   },
 
   /**
@@ -82,34 +91,41 @@ var actionSpawn = {
     max['upgrader'] = 4;
     max['builder'] = 0;
     if (utils.needMoreHarvesters(spawn)) {
-      max['harvester'] = this.nbOf('harvester') + 1;
+      max['harvester'] = this.nbOf(spawn.room, 'harvester') + 1;
     }
-    max['hauler'] = this.nbOf('harvester') / 2 + 1;
+    max['hauler'] = Math.floor(this.nbOfNonSpawning(spawn.room, 'harvester') / 2) + 1;
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
-      max['builder'] = 1;
-      max['upgrader'] = 1;
+      max['builder'] = 2;
+      max['upgrader'] = 2;
       if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES, {
         filter: (s) => { return s.structureType == STRUCTURE_EXTENSION }
       }).length > 0) {
-        max['builder'] = 2;
+        max['builder'] = 3;
         max['upgrader'] = 0;
       }
     }
     max['repairer'] = 1;
 
-    var nbOfCreeps = _.countBy(_.filter(Game.creeps, { room: spawn.room }), 'memory.role');
+    var nbOfCreeps = _(Game.creeps).
+      filter({ memory: {roomName: spawn.room.name } }).
+      countBy('memory.role');
 
-    for(let r of utils.roles()) {
-      var count = nbOfCreeps[r] || 0;
-      if (count < max[r])
+    if (!nbOfCreeps.get('harvester')) {
+      return 'harvester';
+    }
+
+    for (let r of utils.roles()) {
+      var count = nbOfCreeps.get(r) || 0;
+      if (count < max[r]) {
         return r;
+      }
     }
   },
 
-  debug_info: function() {
-    for (let roleName of utils.roles()) {
-      console.log('Nb of '+ roleName + ' : ' + this.nbOf(roleName));
-    };
+  test: function() {
+    let room = Game.rooms.W7N7;
+    let nbOfCreeps = _(Game.creeps).filter({ memory: {roomName: room.name } }).countBy('memory.role');
+    return nbOfCreeps;
   }
 };
 

@@ -18,7 +18,8 @@ var roleUpgrader = {
     if (creep.memory.status == 'filling') {
       require('action.harvest').harvestAnything(creep);
     } else if (creep.memory.status == 'upgrading') {
-      var controller = creep.room.controller;
+      let room = Game.rooms[creep.memory.roomName];
+      var controller = room.controller;
       if (creep.upgradeController(controller) == ERR_NOT_IN_RANGE) {
         creep.moveTo(controller);
       }

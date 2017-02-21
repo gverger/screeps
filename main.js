@@ -1,4 +1,5 @@
 var utils = require('utils');
+require('prototype.creep')();
 
 module.exports = {
   loop: function() {

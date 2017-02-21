@@ -10,7 +10,7 @@ var utils = {
 
   roles: function() {
     if (!this.cachedRoles) {
-      this.cachedRoles = ['harvester', 'hauler', 'upgrader', 'builder', 'repairer'];
+      this.cachedRoles = ['hauler', 'harvester', 'upgrader', 'builder', 'repairer'];
     }
     return this.cachedRoles;
   },
@@ -18,6 +18,10 @@ var utils = {
   _roles: {},
   /** @param {string} roleName **/
   role: function(roleName) {
+    return require('role.' + roleName);
+    if (!this._roles) {
+      this._roles = {};
+    }
     if (!this._roles[roleName]) {
       this._roles[roleName] = require('role.' + roleName);
     }
