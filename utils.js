@@ -74,54 +74,6 @@ var utils = {
   },
 
   /**
-   * @param {Source} source
-   **/
-  isHarvestedSource: function(source) {
-    return source.ticksToRegeneration * 10 >= source.energy;
-    if (this.harvestedSources(source.room).includes(source.id)) {
-      return true;
-    }
-    return false;
-  },
-
-  isHarvestingContainer: function(structure) {
-    if (structure.structureType != STRUCTURE_CONTAINER) {
-      return false;
-    }
-    if (this.harvestingContainers(structure.room).includes(structure.id)) {
-      return true;
-    }
-    return false;
-  },
-
-  computeHarvestContainers: function(room) {
-    var containers = room.find(FIND_STRUCTURES, { filter: {structureType: STRUCTURE_CONTAINER}});
-    var sources = room.find(FIND_SOURCES);
-    this.__harvestingContainers = [];
-    this.__harvestedSources = [];
-    for (let c of containers) {
-      var source = c.pos.findClosestByRange(sources);
-      if (this.distance(c, source) <= 2) {
-        this.__harvestingContainers.push(c.id);
-        this.__harvestedSources.push(source.id);
-      }
-    }
-  },
-
-  harvestingContainers: function(room) {
-    if (!this.__harvestingContainers) {
-      this.computeHarvestContainers(room);
-    }
-    return this.__harvestingContainers;
-  },
-
-  harvestedSources: function(room) {
-    if (!this.__harvestedSources) {
-      this.computeHarvestContainers(room);
-    }
-    return this.__harvestedSources;
-  },
-  /**
    * @param {RoomObject} object1
    * @param {RoomObject} object2
    **/

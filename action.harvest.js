@@ -6,7 +6,7 @@ var actionHarvest = {
   harvest: function(creep) {
     var source = this.lockedResource(creep);
     if (source) {
-      if (source.energy == 0 || !utils.isHarvestedSource(source)) {
+      if (source.energy == 0 || !source.hasAssociatedContainer) {
         lock.release(creep, source);
         source = null;
       }
@@ -16,7 +16,7 @@ var actionHarvest = {
       }
       return true;
     }
-    let sources = Game.rooms[creep.memory.roomName].find(FIND_SOURCES_ACTIVE, {
+    let sources = creep.nativeRoom.find(FIND_SOURCES_ACTIVE, {
       filter: function(source) {
         let harvesters =
           source.pos.findInRange(FIND_MY_CREEPS, 1, {
@@ -45,7 +45,7 @@ var actionHarvest = {
       }});
     let lockedSource = this.lockClosest(creep, sources);
     if (lockedSource) {
-      if (!utils.isHarvestedSource(lockedSource)) {
+      if (!lockedSource.hasAssociatedContainer) {
         lock.release(creep, lockedSource);
       }
       if (creep.harvest(lockedSource) == ERR_NOT_IN_RANGE) {
@@ -73,7 +73,7 @@ var actionHarvest = {
         return true;
       }
     }
-    var structures = utils.structuresGivingEnergy(Game.rooms[creep.memory.roomName]);
+    var structures = utils.structuresGivingEnergy(creep.nativeRoom);
     if (filter) {
       structures = _.filter(structures, filter);
     }

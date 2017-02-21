@@ -48,7 +48,7 @@ var roleHauler = {
         var canHarvest = require('action.harvest').harvestAnything(creep, function(s) {
           return (
               s.structureType == STRUCTURE_CONTAINER &&
-              utils.isHarvestingContainer(s) &&
+              s.isForHarvest &&
               s.store[RESOURCE_ENERGY] > s.storeCapacity / 3
               );
         });
@@ -97,7 +97,7 @@ var roleHauler = {
       });
       if (!transferToExtenstion) {
         transferEnergy.transfer(creep, function(s) {
-          return s.structureType == STRUCTURE_CONTAINER && !utils.isHarvestingContainer(s) ||
+          return s.structureType == STRUCTURE_CONTAINER && !s.isForHarvest ||
             s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity;
         });
       }
