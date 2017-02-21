@@ -26,8 +26,9 @@ var actionBuildRoads = {
   },
 
   buildRoadsAroundExtensions: function(room) {
+    let structureTypes = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN];
     let extensions = room.find(FIND_MY_STRUCTURES,
-        { filter: { structureType: STRUCTURE_EXTENSION } });
+        { filter: (s) => { structureTypes.includes(s.structureType); } });
     let positions = _(extensions).map(function(extension) {
       /** @type {RoomPosition} pos */
       let pos = extension.pos;
