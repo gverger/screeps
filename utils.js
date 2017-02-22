@@ -73,6 +73,10 @@ var utils = {
     return this.__structuresGivingEnergy;
   },
 
+  harvestedSources: function(room) {
+    return room.find(FIND_SOURCES, 'hasAssociatedContainer');
+  },
+
   /**
    * @param {RoomObject} object1
    * @param {RoomObject} object2
