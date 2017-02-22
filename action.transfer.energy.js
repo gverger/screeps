@@ -1,6 +1,11 @@
 var utils = require('utils');
 
 var actionTransferEnergy = {
+  /**
+   * @param {Creep} creep
+   * @param {function} filter
+   * @return {bool}
+   **/
   transfer: function(creep, filter) {
     var structures = utils.structuresNeedingEnergy(creep.room);
     if (filter) {

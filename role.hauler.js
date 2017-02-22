@@ -92,10 +92,10 @@ var roleHauler = {
     }
     if (creep.memory.status == 'transfering') {
       var transferEnergy = require('action.transfer.energy');
-      var transferToExtenstion = transferEnergy.transfer(creep, function(s) {
+      var transferToExtension = transferEnergy.transfer(creep, function(s) {
         return [STRUCTURE_SPAWN, STRUCTURE_EXTENSION].includes(s.structureType);
       });
-      if (!transferToExtenstion) {
+      if (!transferToExtension) {
         transferEnergy.transfer(creep, function(s) {
           return s.structureType == STRUCTURE_CONTAINER && !s.isForHarvest ||
             s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity;
