@@ -23,7 +23,7 @@ module.exports = function() {
 
   Object.defineProperty(Source.prototype, 'hasAssociatedContainer', {
     get: function() {
-      return (this.associatedContainer !== undefined);
+      return (this.associatedContainer !== null && this.associatedContainer !== undefined);
     }
   });
 
