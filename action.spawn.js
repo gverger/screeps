@@ -27,9 +27,12 @@ var actionSpawn = {
 
   bodyFor: function(room, role) {
     var maxEnergy = room.energyCapacityAvailable;
-    if ((role == 'harvester' && this.nbOf(room, 'harvester') == 0) ||
-        (role == 'hauler' && this.nbOf(room, 'harvester') > 0 && this.nbOf(room, 'hauler') == 0 &&
-         room.energyAvailable > (BODYPART_COST[CARRY] + BODYPART_COST[MOVE]))) {
+    if (role == 'harvester' && this.nbOf(room, 'harvester') == 0 &&
+        room.energyAvailable > (BODYPART_COST[CARRY] + BODYPART_COST[MOVE] + BODYPART_COST[WORK])) {
+      maxEnergy = room.energyAvailable;
+    }
+    if (role == 'hauler' && this.nbOf(room, 'hauler') == 0 &&
+         room.energyAvailable > (BODYPART_COST[CARRY] + BODYPART_COST[MOVE])) {
       maxEnergy = room.energyAvailable;
     }
 

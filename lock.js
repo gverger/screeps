@@ -31,6 +31,7 @@ var lock = {
 
   lockAllResources: function(spawn) {
     this.log('lockAll');
+    spawn.room.harvestOnly = true;
     var resources = this.resources(spawn.room);
     for (let r of resources) {
       this.lock(spawn, r, 0);
@@ -40,6 +41,7 @@ var lock = {
 
   releaseAllResources: function(spawn) {
     this.log('releaseAll');
+    spawn.room.harvestOnly = false;
     var resources = this.resources(spawn.room);
     for (let r of resources) {
       var locked = this.get(r.id);
@@ -151,6 +153,7 @@ var lock = {
    * @param {RoomObject} room
    **/
   visualDebug: function(room) {
+    return;
     for (let key in Memory.lock) {
       var locked = Memory.lock[key];
       var creep = Game.getObjectById(locked.entity);

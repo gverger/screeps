@@ -93,7 +93,9 @@ var utils = {
    **/
   needMoreHarvesters: function(spawn) {
     let room = spawn.room;
-    let harvesters = room.find(FIND_CREEPS, { filter:  { memory: { role: 'harvester' } } });
+    let harvesters = room.find(FIND_CREEPS, {
+      filter:  { memory: { role: 'harvester', roomName: room.name }
+      } });
     let nbWorkParts = _(harvesters).filter(function(h) {
       // let timeToMoveToCurrentDestination = eta.timeToDestination(h, spawn.pos);
       let timeToSpawn = h.body.length * 3;
