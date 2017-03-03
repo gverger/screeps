@@ -43,7 +43,7 @@ var actionHarvest = {
         }
         return true;
       }});
-    let lockedSource = this.lockClosest(creep, sources);
+    let lockedSource = creep.lockClosest(sources);
     if (lockedSource) {
       if (!lockedSource.hasAssociatedContainer) {
         lock.release(creep, lockedSource);
@@ -73,42 +73,20 @@ var actionHarvest = {
         return true;
       }
     }
-    var structures = utils.structuresGivingEnergy(creep.nativeRoom);
+    // var structures = utils.structuresGivingEnergy(creep.nativeRoom);
+    var structures = creep.nativeRoom.structuresWithEnergy();
+
     if (filter) {
       structures = _.filter(structures, filter);
     }
     if (structures != '') {
-      let lockedStructure = this.lockClosest(creep, structures);
+      let lockedStructure = creep.lockClosest(structures);
       if (lockedStructure) {
         this.goHarvest(creep, lockedStructure);
         return true;
       }
     }
     return false;
-  },
-
-  sortByDistance: function(creep, objects) {
-    let distances = {};
-    for (i = 0; i < objects.length; i++) {
-      let s = objects[i];
-      distances[s] = creep.pos.findPathTo(s).length;
-    }
-    return objects.sort((s1, s2) => { return distances[s1] - distances[s2]; });
-  },
-
-  lockClosest: function(creep, resources) {
-    resources = this.sortByDistance(creep, resources);
-    var idx = 0;
-    var canLock = false;
-    while (idx < resources.length && !canLock) {
-      var s = resources[idx];
-      let canLock = lock.lock(creep, s, Game.time + eta.timeToDestination(creep, s));
-      if (canLock) {
-        return s;
-      }
-      idx ++;
-    }
-    return null;
   },
 
   goHarvest: function(creep, structure) {

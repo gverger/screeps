@@ -29,7 +29,7 @@ var roleHauler = {
         if (currentLock == dropped.id) {
           canLock = true;
         } else {
-          var ttd = eta.timeToDestination(creep, dropped);
+          var ttd = creep.timeToDestination(dropped);
           canLock = dropped.amount > ttd && lock.lock(creep, dropped, Game.time + ttd);
           if (canLock) {
             lock.remove(currentLock);
@@ -57,10 +57,18 @@ var roleHauler = {
             let containers = c.pos.findInRange(FIND_STRUCTURES, 1, {
               filter: { structureType: STRUCTURE_CONTAINER }
             });
-            return c.memory.role == 'harvester' && c.carry.energy > 40 && containers.length == 0;
+            let haulers = c.pos.findInRange(FIND_MY_CREEPS, 1, {
+              filter: function(h) {
+                return h.memory.role == 'hauler' && h.id !== creep.id;
+              }
+            });
+            return c.memory.role == 'harvester' &&
+              c.carry.energy > 40 &&
+              containers.length == 0 &&
+              haulers.length == 0;
           });
 
-          var h = creep.pos.findClosestByPath(harvesters);
+          var h = creep.lockClosest(harvesters);
           if (h) {
             if (utils.distance(creep, h) > 1) {
               creep.moveTo(h);

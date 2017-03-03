@@ -74,7 +74,7 @@ var utils = {
   },
 
   harvestedSources: function(room) {
-    return room.find(FIND_SOURCES, 'hasAssociatedContainer');
+    return room.find(FIND_SOURCES, { filter: {  hasAssociatedContainer: true } });
   },
 
   /**

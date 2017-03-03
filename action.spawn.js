@@ -14,22 +14,24 @@ var actionSpawn = {
 
     if (this.lockForRole(nextRole)) {
       lock.lockAllResources(spawn);
+    } else {
+      lock.releaseAllResources(spawn);
     }
     var body = this.bodyFor(spawn.room, nextRole);
     if (spawn.canCreateCreep(body) == OK) {
       var creep = spawn.createCreep(body, undefined, { role: nextRole, roomName: spawn.room.name});
       console.log('New ' + nextRole + ' created.');
-      if (!this.lockForRole(nextRole)) {
-        lock.releaseAllResources(spawn);
-      }
     }
   },
 
   bodyFor: function(room, role) {
     var maxEnergy = room.energyCapacityAvailable;
     if (role == 'harvester' && this.nbOf(room, 'harvester') == 0 &&
-        room.energyAvailable > (BODYPART_COST[CARRY] + BODYPART_COST[MOVE] + BODYPART_COST[WORK])) {
+        room.energyAvailable > this.bodyCost([CARRY, WORK, MOVE])) {
       maxEnergy = room.energyAvailable;
+    }
+    if (role == 'harvester') {
+      maxEnergy = Math.min(maxEnergy, 5 * this.bodyCost([CARRY, WORK, MOVE]));
     }
     if (role == 'hauler' && this.nbOf(room, 'hauler') == 0 &&
          room.energyAvailable > (BODYPART_COST[CARRY] + BODYPART_COST[MOVE])) {
@@ -98,12 +100,12 @@ var actionSpawn = {
     }
     max['hauler'] = Math.floor(this.nbOfNonSpawning(spawn.room, 'harvester') / 2) + 1;
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
-      max['builder'] = 2;
-      max['upgrader'] = 2;
+      max['builder'] = 1;
+      max['upgrader'] = 1;
       if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES, {
         filter: (s) => { return s.structureType == STRUCTURE_EXTENSION }
       }).length > 0) {
-        max['builder'] = 3;
+        max['builder'] = 2;
         max['upgrader'] = 0;
       }
     }
