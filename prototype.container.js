@@ -31,4 +31,17 @@ module.exports = function() {
       return this.memory.isForHarvest;
     }
   });
+
+  StructureContainer.prototype.acceptsWithdrawsFrom = function(roleName) {
+    if (this.isForHarvest && this.room.harvestOnly) {
+      return roleName == 'hauler';
+    }
+    return true;
+  };
+
+  Object.defineProperty(StructureContainer.prototype, 'hasEnergy', {
+    get: function() {
+      return this.store[RESOURCE_ENERGY] > 0;
+    }
+  });
 };

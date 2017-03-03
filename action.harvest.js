@@ -74,7 +74,7 @@ var actionHarvest = {
       }
     }
     // var structures = utils.structuresGivingEnergy(creep.nativeRoom);
-    var structures = creep.nativeRoom.structuresWithEnergy();
+    var structures = creep.nativeRoom.structuresToHarvest(creep.memory.role);
 
     if (filter) {
       structures = _.filter(structures, filter);
