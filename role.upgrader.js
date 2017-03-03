@@ -21,7 +21,7 @@ var roleUpgrader = {
       let room = Game.rooms[creep.memory.roomName];
       var controller = room.controller;
       if (creep.upgradeController(controller) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(controller);
+        creep.moveTo(controller, {visualizePathStyle: {}});
       }
     }
   },

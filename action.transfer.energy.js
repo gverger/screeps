@@ -14,7 +14,7 @@ var actionTransferEnergy = {
     if (structures != '') {
       var s = creep.pos.findClosestByPath(structures);
       if (creep.transfer(s, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(s);
+        creep.moveTo(s, {visualizePathStyle: {}});
       }
       return true;
     }

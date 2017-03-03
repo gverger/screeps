@@ -54,45 +54,43 @@ var roleHauler = {
         });
         if (!canHarvest) {
           var harvesters = _.filter(Game.creeps, function(c) {
-            let containers = c.pos.findInRange(FIND_STRUCTURES, 1, {
-              filter: { structureType: STRUCTURE_CONTAINER }
-            });
+            if (c.spawning || c.memory.role !== 'harvester') {
+              return false;
+            }
             let haulers = c.pos.findInRange(FIND_MY_CREEPS, 1, {
               filter: function(h) {
                 return h.memory.role == 'hauler' && h.id !== creep.id;
               }
             });
-            return c.memory.role == 'harvester' &&
-              c.carry.energy > 40 &&
-              containers.length == 0 &&
-              haulers.length == 0;
+            return haulers.length == 0;
           });
 
-          var h = creep.lockClosest(harvesters);
+          var harvestersWithoutAContainer = _.filter(harvesters, function(c) {
+            let containers = c.pos.findInRange(FIND_STRUCTURES, 1, {
+              filter: { structureType: STRUCTURE_CONTAINER }
+            });
+            return containers.length == 0;
+          });
+
+          let h = null;
+          if (harvestersWithoutAContainer.length > 0) {
+            h = creep.pos.findClosestByPath(harvestersWithoutAContainer);
+          } else {
+            h = creep.pos.findClosestByPath(harvesters);
+          }
           if (h) {
             if (utils.distance(creep, h) > 1) {
-              creep.moveTo(h);
+              creep.moveTo(h, {visualizePathStyle: {}});
             } else {
-              var errCode = h.drop(RESOURCE_ENERGY,
-                  Math.min(h.carry.energy, creep.carryCapacity - this.carriedWeight(creep)));
+              if (harvestersWithoutAContainer.length > 0 &&
+                  h.carry.energy > h.carryCapacity * 0.8) {
+                var errCode = h.drop(RESOURCE_ENERGY,
+                    Math.min(h.carry.energy, creep.carryCapacity - this.carriedWeight(creep)));
+              }
             }
           } else {
             if (creep.carry.energy > 0) {
               creep.memory.status = 'transfering';
-            } else {
-              var harvesters = _.filter(Game.creeps, function(c) {
-                if (c.memory.role !== 'harvester' || c.spawning) {
-                  return false;
-                }
-                let haulers = c.pos.findInRange(FIND_MY_CREEPS, 1, {
-                  filter: { memory: { role: 'hauler' } }
-                });
-                return (haulers.length == 0 || haulers[0].id === creep.id);
-              });
-              var h = creep.pos.findClosestByPath(harvesters);
-              if (h) {
-                creep.moveTo(h);
-              }
             }
           }
         }

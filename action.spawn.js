@@ -7,16 +7,16 @@ var actionSpawn = {
   spawn: function(spawn) {
     // this.debug_info();
     var nextRole = this.whatNext(spawn);
-    if (!nextRole) {
-      lock.releaseAllResources(spawn);
-      return;
-    }
-
     if (this.lockForRole(nextRole)) {
       lock.lockAllResources(spawn);
     } else {
       lock.releaseAllResources(spawn);
     }
+    if (!nextRole) {
+      lock.releaseAllResources(spawn);
+      return;
+    }
+
     var body = this.bodyFor(spawn.room, nextRole);
     if (spawn.canCreateCreep(body) == OK) {
       var creep = spawn.createCreep(body, undefined, { role: nextRole, roomName: spawn.room.name});

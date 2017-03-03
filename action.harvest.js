@@ -11,7 +11,7 @@ var actionHarvest = {
         source = null;
       }
       if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(source);
+        creep.moveTo(source, {visualizePathStyle: {}});
         return false;
       }
       return true;
@@ -49,7 +49,7 @@ var actionHarvest = {
         lock.release(creep, lockedSource);
       }
       if (creep.harvest(lockedSource) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(lockedSource);
+        creep.moveTo(lockedSource, {visualizePathStyle: {}});
         return false;
       }
       return true;
@@ -98,7 +98,7 @@ var actionHarvest = {
       lock.releaseCreep(creep);
     }
     if (errCode == ERR_NOT_IN_RANGE) {
-      creep.moveTo(structure);
+      creep.moveTo(structure, {visualizePathStyle: {}});
     }
     if (errCode != OK && errCode != ERR_NOT_IN_RANGE) {
       creep.say(errCode);

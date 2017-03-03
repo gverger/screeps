@@ -36,7 +36,7 @@ var roleBuilder = {
         creep.say(errCode);
       }
       if (errCode == ERR_NOT_IN_RANGE) {
-        creep.moveTo(site);
+        creep.moveTo(site, {visualizePathStyle: {}});
       }
     }
   }

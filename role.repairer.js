@@ -24,7 +24,7 @@ var roleRepairer = {
         }
       });
       if (creep.repair(roadToRepair) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(roadToRepair);
+        creep.moveTo(roadToRepair, {visualizePathStyle: {}});
       }
     }
   }
