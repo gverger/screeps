@@ -1,9 +1,9 @@
 module.exports = function() {
   StructureExtension.prototype.acceptsWithdrawsFrom = function(roleName) {
     if (this.isForHarvest) {
-      return roleName == 'hauler';
+      return false;
     }
-    return true;
+    return this.roleName !== 'hauler';
   };
 
   Object.defineProperty(StructureExtension.prototype, 'hasEnergy', {

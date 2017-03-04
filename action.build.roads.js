@@ -5,7 +5,7 @@ var actionBuildRoads = {
    * @param {RoomObject} room
    **/
   buildRoads: function(room) {
-    if (Game.time % 10 != 0) {
+    if (Game.time % 100 != 0) {
       return null;
     }
     var sources = room.find(FIND_SOURCES);

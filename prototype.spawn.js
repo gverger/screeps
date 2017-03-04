@@ -1,9 +1,9 @@
 module.exports = function() {
   StructureSpawn.prototype.acceptsWithdrawsFrom = function(roleName) {
     if (this.isForHarvest) {
-      return roleName == 'hauler';
+      return false;
     }
-    return true;
+    return this.roleName !== 'hauler';
   };
 
   Object.defineProperty(StructureSpawn.prototype, 'hasEnergy', {

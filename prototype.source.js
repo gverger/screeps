@@ -33,7 +33,7 @@ module.exports = function() {
     },
 
     set: function(value) {
-      this.memory.hasAssociatedContainerId = value.id;
+      this.memory.associatedContainerId = value.id;
     }
   });
 };
