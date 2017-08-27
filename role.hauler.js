@@ -2,6 +2,9 @@ var eta = require('utils.eta');
 var utils = require('utils');
 var lock = require('lock');
 var transferEnergy = require('action.transfer.energy');
+var actionHarvest = require('action.harvest');
+var transferMinerals = require('action.transfer.minerals');
+
 var roleHauler = {
   carriedWeight: function(creep) {
     return _.sum(creep.carry);
@@ -14,7 +17,7 @@ var roleHauler = {
     if (creep.memory.status !== 'transfering' && this.carriedWeight(creep) == creep.carryCapacity) {
       lock.releaseCreep(creep);
       creep.memory.status = 'transfering';
-    } else if (creep.memory.status !== 'filling' && creep.carry.energy == 0) {
+    } else if (creep.memory.status !== 'filling' && this.carriedWeight(creep) == 0) {
       creep.memory.status = 'filling';
     }
   },
@@ -46,7 +49,7 @@ var roleHauler = {
           creep.moveTo(dropped, {visualizePathStyle: {}});
         }
       } else {
-        var canHarvest = require('action.harvest').harvestAnything(creep);
+        var canHarvest = actionHarvest.harvestAnything(creep);
         if (!canHarvest) {
           var harvesters = _.filter(Game.creeps, function(c) {
             if (c.spawning || c.memory.role !== 'harvester') {
@@ -100,13 +103,16 @@ var roleHauler = {
       }
     }
     if (creep.memory.status == 'transfering') {
-      let filters = [
-        function(s) { return [STRUCTURE_SPAWN, STRUCTURE_EXTENSION].includes(s.structureType); },
-        function(s) { return s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity; },
-        function(s) { return s.structureType == STRUCTURE_CONTAINER && !s.isForHarvest; },
-        function(s) { return s.structureType == STRUCTURE_STORAGE && !s.isFull; }
-      ];
-      return _.some(filters, function(filter) { return transferEnergy.transfer(creep, filter); });
+      if (creep.carry.energy > 0) {
+        let filters = [
+          function(s) { return [STRUCTURE_SPAWN, STRUCTURE_EXTENSION].includes(s.structureType); },
+          function(s) { return s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity; },
+          function(s) { return s.structureType == STRUCTURE_CONTAINER && !s.isForHarvest; },
+          function(s) { return s.structureType == STRUCTURE_STORAGE && !s.isFull; }
+        ];
+        return _.some(filters, function(filter) { return transferEnergy.transfer(creep, filter); });
+      }
+      transferMinerals.transfer(creep);
     }
   }
 };
