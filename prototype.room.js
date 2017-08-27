@@ -1,4 +1,4 @@
-module.exports = function() {
+// module.exports = function() {
   Room.prototype.structuresWithEnergy = function() {
     if (this.__structuresWithEnergyComputedTime !== Game.time) {
       this.__structuresWithEnergyComputedTime = Game.time;
@@ -25,4 +25,16 @@ module.exports = function() {
       this.memory.harvestOnlyMode = value;
     }
   });
+
+Room.prototype.timeToUpgradeController = function() {
+  let level = this.controller.level;
+  let maxNbOfExtensions = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][level];
+  return this.nbOfExtensions() == maxNbOfExtensions;
 };
+
+Room.prototype.nbOfExtensions = function() {
+  let extensions =
+    this.find(FIND_MY_STRUCTURES, { filter: (s) => s.structureType == STRUCTURE_EXTENSION });
+  return extensions.length;
+};
+// };

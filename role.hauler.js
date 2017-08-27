@@ -1,6 +1,7 @@
 var eta = require('utils.eta');
 var utils = require('utils');
 var lock = require('lock');
+var transferEnergy = require('action.transfer.energy');
 var roleHauler = {
   carriedWeight: function(creep) {
     return _.sum(creep.carry);
@@ -22,7 +23,7 @@ var roleHauler = {
     this.updateStatus(creep);
 
     if (creep.memory.status == 'filling') {
-      var dropped = creep.pos.findClosestByPath(FIND_DROPPED_ENERGY);
+      var dropped = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES);
       var canLock = false;
       if (dropped) {
         var currentLock = creep.memory.lock;
@@ -45,21 +46,15 @@ var roleHauler = {
           creep.moveTo(dropped, {visualizePathStyle: {}});
         }
       } else {
-        var canHarvest = require('action.harvest').harvestAnything(creep, function(s) {
-          return (
-              s.structureType == STRUCTURE_CONTAINER &&
-              s.isForHarvest &&
-              s.store[RESOURCE_ENERGY] > s.storeCapacity / 3
-              );
-        });
+        var canHarvest = require('action.harvest').harvestAnything(creep);
         if (!canHarvest) {
           var harvesters = _.filter(Game.creeps, function(c) {
             if (c.spawning || c.memory.role !== 'harvester') {
               return false;
             }
             let haulers = c.pos.findInRange(FIND_MY_CREEPS, 1, {
-              filter: function(h) {
-                return h.memory.role == 'hauler' && h.id !== creep.id;
+              filter: function(hauler) {
+                return hauler.memory.role == 'hauler' && hauler.id !== creep.id;
               }
             });
             return haulers.length == 0;
@@ -67,25 +62,33 @@ var roleHauler = {
 
           var harvestersWithoutAContainer = _.filter(harvesters, function(c) {
             let containers = c.pos.findInRange(FIND_STRUCTURES, 1, {
-              filter: { structureType: STRUCTURE_CONTAINER }
+              filter: {
+                function(s) {
+                  return s.structureType == STRUCTURE_CONTAINER ||
+                    s.structureType == STRUCTURE_LINK;
+                }
+              }
             });
             return containers.length == 0;
           });
 
-          let h = null;
+          let harvester = null;
           if (harvestersWithoutAContainer.length > 0) {
-            h = creep.pos.findClosestByPath(harvestersWithoutAContainer);
+            harvester = creep.pos.findClosestByPath(harvestersWithoutAContainer);
           } else {
-            h = creep.pos.findClosestByPath(harvesters);
+            harvester = creep.pos.findClosestByPath(harvesters);
           }
-          if (h) {
-            if (utils.distance(creep, h) > 1) {
-              creep.moveTo(h, {visualizePathStyle: {}});
+          if (harvester) {
+            if (utils.distance(creep, harvester) > 1) {
+              creep.moveTo(harvester, {visualizePathStyle: {}});
             } else {
+              let availableCapacity = creep.carryCapacity - this.carriedWeight(creep);
               if (harvestersWithoutAContainer.length > 0 &&
-                  h.carry.energy > h.carryCapacity * 0.8) {
-                var errCode = h.drop(RESOURCE_ENERGY,
-                    Math.min(h.carry.energy, creep.carryCapacity - this.carriedWeight(creep)));
+                  (harvester.carry.energy > harvester.carryCapacity * 0.8
+                    || harvester.carry.energy >= availableCapacity)
+                  ) {
+                var errCode = harvester.drop(RESOURCE_ENERGY,
+                    Math.min(harvester.carry.energy, availableCapacity));
               }
             }
           } else {
@@ -97,16 +100,13 @@ var roleHauler = {
       }
     }
     if (creep.memory.status == 'transfering') {
-      var transferEnergy = require('action.transfer.energy');
-      var transferToExtension = transferEnergy.transfer(creep, function(s) {
-        return [STRUCTURE_SPAWN, STRUCTURE_EXTENSION].includes(s.structureType);
-      });
-      if (!transferToExtension) {
-        transferEnergy.transfer(creep, function(s) {
-          return s.structureType == STRUCTURE_CONTAINER && !s.isForHarvest ||
-            s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity;
-        });
-      }
+      let filters = [
+        function(s) { return [STRUCTURE_SPAWN, STRUCTURE_EXTENSION].includes(s.structureType); },
+        function(s) { return s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity; },
+        function(s) { return s.structureType == STRUCTURE_CONTAINER && !s.isForHarvest; },
+        function(s) { return s.structureType == STRUCTURE_STORAGE && !s.isFull; }
+      ];
+      return _.some(filters, function(filter) { return transferEnergy.transfer(creep, filter); });
     }
   }
 };

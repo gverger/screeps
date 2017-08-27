@@ -1,14 +1,12 @@
-module.exports = function() {
+// module.exports = function() {
   StructureSpawn.prototype.acceptsWithdrawsFrom = function(roleName) {
-    if (this.isForHarvest) {
-      return false;
-    }
-    return this.roleName !== 'hauler';
+    return false;
+    return roleName !== 'hauler' && !require('utils').needMoreHarvesters(this);
   };
 
   Object.defineProperty(StructureSpawn.prototype, 'hasEnergy', {
     get: function() {
-      return this.energy > 0;
+      return this.energy > 100;
     }
   });
-};
+// };

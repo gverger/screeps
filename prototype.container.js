@@ -1,4 +1,4 @@
-module.exports = function() {
+// module.exports = function() {
   Object.defineProperty(StructureContainer.prototype, 'memory', {
     get: function() {
       if (!Memory.containers) {
@@ -33,15 +33,16 @@ module.exports = function() {
   });
 
   StructureContainer.prototype.acceptsWithdrawsFrom = function(roleName) {
-    if (this.isForHarvest && this.room.harvestOnly) {
-      return roleName == 'hauler';
+    if (this.isForHarvest) {
+      return true;
+      // return roleName == 'hauler';
     }
-    return true;
+    return roleName != 'hauler';
   };
 
   Object.defineProperty(StructureContainer.prototype, 'hasEnergy', {
     get: function() {
-      return this.store[RESOURCE_ENERGY] > 0;
+      return this.store[RESOURCE_ENERGY] > this.storeCapacity / 3;
     }
   });
-};
+// };

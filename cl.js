@@ -10,6 +10,6 @@ module.exports = {
     return require('action.spawn').whatNext(this.spawn);
   },
 
-  room: Game.rooms.E69S73,
+  room: Game.rooms.W22S94,
   spawn: Game.spawns.Spawn1
 };

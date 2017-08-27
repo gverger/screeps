@@ -10,7 +10,7 @@ var utils = {
 
   roles: function() {
     if (!this.cachedRoles) {
-      this.cachedRoles = ['hauler', 'harvester', 'upgrader', 'builder', 'repairer'];
+      this.cachedRoles = ['harvester', 'hauler', 'upgrader', 'builder', 'repairer'];
     }
     return this.cachedRoles;
   },
@@ -18,7 +18,6 @@ var utils = {
   _roles: {},
   /** @param {string} roleName **/
   role: function(roleName) {
-    return require('role.' + roleName);
     if (!this._roles) {
       this._roles = {};
     }
@@ -41,7 +40,8 @@ var utils = {
    **/
   structuresNeedingEnergy: function(room) {
     if (!this.__structuresNeedingEnergy) {
-      var structureEnergyTypes = [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_EXTENSION];
+      var structureEnergyTypes =
+        [STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_EXTENSION, STRUCTURE_LINK];
       var structureStorageTypes = [STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
 
       this.__structuresNeedingEnergy = room.find(FIND_STRUCTURES, {

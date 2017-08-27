@@ -90,26 +90,28 @@ var actionSpawn = {
    * @return {string}
    **/
   whatNext: function(spawn) {
+    let timeToUpgradeController = spawn.room.timeToUpgradeController();
     var max = {};
     max['harvester'] = 2;
     max['hauler'] = 1;
-    max['upgrader'] = 4;
+    max['upgrader'] = timeToUpgradeController ? 3 : 0;
     max['builder'] = 0;
     if (utils.needMoreHarvesters(spawn)) {
       max['harvester'] = this.nbOf(spawn.room, 'harvester') + 1;
     }
-    max['hauler'] = Math.floor(this.nbOfNonSpawning(spawn.room, 'harvester') / 2) + 1;
+    max['hauler'] = Math.ceil(this.nbOfNonSpawning(spawn.room, 'harvester') / 2)
+      + (timeToUpgradeController ? 1 : 0);
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
       max['builder'] = 1;
       max['upgrader'] = 1;
       if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES, {
-        filter: (s) => { return s.structureType == STRUCTURE_EXTENSION }
+        filter: (s) => { return s.structureType == STRUCTURE_EXTENSION || s.structureType == STRUCTURE_CONTAINER || s.structureType == STRUCTURE_LINK }
       }).length > 0) {
-        max['builder'] = 2;
+        max['builder'] = 4;
         max['upgrader'] = 0;
       }
     }
-    max['repairer'] = 1;
+    max['repairer'] = 0;
 
     var nbOfCreeps = _(Game.creeps).
       filter({ memory: {roomName: spawn.room.name } }).
@@ -117,6 +119,10 @@ var actionSpawn = {
 
     if (!nbOfCreeps.get('harvester')) {
       return 'harvester';
+    }
+
+    if (!nbOfCreeps.get('hauler')) {
+      return 'hauler';
     }
 
     for (let r of utils.roles()) {

@@ -60,18 +60,12 @@ var actionHarvest = {
   harvestAnything: function(creep, filter) {
     var s = this.lockedResource(creep);
     if (s != undefined) {
-      if (filter && !filter(s)) {
-        lock.release(creep, s);
-      }
-      if ((s.energyCapacity && s.energy == 0) ||
-          ([STRUCTURE_STORAGE, STRUCTURE_CONTAINER].includes(s.structureType) &&
-           s.store[RESOURCE_ENERGY] == 0) ||
-          (s.amount == 0)) {
-        lock.release(creep, s);
-      } else {
+      let filteredOut = filter && !filter(s);
+      if (!filteredOut && s.hasEnergy) {
         this.goHarvest(creep, s);
         return true;
       }
+      lock.release(creep, s);
     }
     // var structures = utils.structuresGivingEnergy(creep.nativeRoom);
     var structures = creep.nativeRoom.structuresToHarvest(creep.memory.role);

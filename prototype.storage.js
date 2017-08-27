@@ -1,13 +1,10 @@
-module.exports = function() {
+// module.exports = function() {
   StructureStorage.prototype.acceptsWithdrawsFrom = function(roleName) {
-    if (this.isForHarvest) {
-      return roleName == 'hauler';
-    }
-    return true;
+    return roleName != 'hauler';
   };
   Object.defineProperty(StructureStorage.prototype, 'hasEnergy', {
     get: function() {
       return this.store[RESOURCE_ENERGY] > 0;
     }
   });
-};
+// };

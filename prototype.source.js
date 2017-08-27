@@ -1,4 +1,4 @@
-module.exports = function() {
+// module.exports = function() {
   Object.defineProperty(Source.prototype, 'memory', {
     get: function() {
       if (!Memory.sources) {
@@ -36,4 +36,4 @@ module.exports = function() {
       this.memory.associatedContainerId = value.id;
     }
   });
-};
+// };
