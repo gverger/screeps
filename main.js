@@ -37,6 +37,7 @@ module.exports = {
       room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } }).forEach(function(s) {
         s.run();
       });
+      _.each(Game.flags, f => { f.run(); });
     });
   }
 };

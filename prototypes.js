@@ -7,3 +7,4 @@ require('prototype.storage');
 require('prototype.extension');
 require('prototype.link');
 require('prototype.resource');
+require('prototype.flag');

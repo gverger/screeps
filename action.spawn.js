@@ -37,6 +37,9 @@ var actionSpawn = {
          room.energyAvailable > (BODYPART_COST[CARRY] + BODYPART_COST[MOVE])) {
       maxEnergy = room.energyAvailable;
     }
+    if (role == 'claimer') {
+      maxEnergy = this.bodyCost([MOVE, MOVE, CLAIM]);
+    }
 
     var body = [];
     var bodyParts = [CARRY, WORK, MOVE];
@@ -49,7 +52,12 @@ var actionSpawn = {
       bodyParts = [WORK, WORK, WORK, WORK, WORK, MOVE];
       maxEnergy = Math.min(maxEnergy,
           this.bodyCost([CARRY, MOVE, MOVE, WORK, WORK, WORK, WORK, WORK]));
-      energyNeeded = BODYPART_COST[CARRY] + BODYPART_COST[MOVE];
+      energyNeeded = this.bodyCost(body);
+    } else if (role == 'remote-miner') {
+      bodyParts = [CARRY, MOVE, CARRY, MOVE, WORK];
+    } else if (role == 'claimer') {
+      body = [MOVE, MOVE, CLAIM];
+      energyNeeded = this.bodyCost(body);
     }
     while (energyNeeded <= maxEnergy && body.length < 50) {
       for (let bodyPart of bodyParts) {
@@ -94,13 +102,14 @@ var actionSpawn = {
     var max = {};
     max['harvester'] = 2;
     max['hauler'] = 1;
-    max['upgrader'] = timeToUpgradeController ? 3 : 0;
+    max['remote-miner'] = _.size(_.filter(Game.flags, { memory: { role: 'remote-miner' } }));
+    max['upgrader'] = timeToUpgradeController ? 2 : 0;
+    max['claimer'] = _.size(_.filter(Game.flags, { memory: { role: 'claimer' } }));
     max['builder'] = 0;
     if (utils.needMoreHarvesters(spawn)) {
       max['harvester'] = this.nbOf(spawn.room, 'harvester') + 1;
     }
-    max['hauler'] = Math.ceil(this.nbOfNonSpawning(spawn.room, 'harvester') / 2)
-      + (timeToUpgradeController ? 1 : 0);
+    max['hauler'] = Math.ceil(this.nbOfNonSpawning(spawn.room, 'harvester') / 2) + (timeToUpgradeController ? 1 : 0);
     if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
       max['builder'] = 1;
       max['upgrader'] = 1;
