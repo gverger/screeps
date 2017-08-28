@@ -14,12 +14,18 @@ module.exports = {
   loop: function() {
     profiler.wrap(function() {
       PathFinder.use(true);
-      var room = Game.spawns.Spawn1.room;
-      lock.visualDebug(room);
       cleanMemory.clean();
-      spawn.spawn(Game.spawns.Spawn1);
-      build.buildRoads(room);
-      defend.defend(room);
+      _.each(Game.spawns, function(s) {
+        spawn.spawn(s);
+        const room = s.room;
+        lock.visualDebug(room);
+        build.buildRoads(room);
+        defend.defend(room);
+        room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } }).forEach(function(s) {
+          s.run();
+        });
+      });
+      // spawn.spawn(Game.spawns.Spawn1);
       for (let name in Game.creeps) {
         var creep = Game.creeps[name];
         if (creep.spawning) {
@@ -34,9 +40,6 @@ module.exports = {
           // return;
         }
       }
-      room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } }).forEach(function(s) {
-        s.run();
-      });
       _.each(Game.flags, f => { f.run(); });
     });
   }
