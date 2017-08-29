@@ -34,7 +34,7 @@ var roleHauler = {
           canLock = true;
         } else {
           var ttd = creep.timeToDestination(dropped);
-          canLock = dropped.amount > ttd && lock.lock(creep, dropped, Game.time + ttd);
+          canLock = dropped.amount >= ttd && lock.lock(creep, dropped, Game.time + ttd);
           if (canLock) {
             lock.remove(currentLock);
           }

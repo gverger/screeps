@@ -88,8 +88,9 @@ Room.prototype.needMoreHarvesters = function() {
       }
       return sum;
     }, 0);
-    let nbSources = this.sources().length;
-    let maxHarvesters = _(this.sources()).sum(s => { return s.nbOfHarvestingSlots(); });
+    let nbSources = this.sources().size();
+    let maxHarvesters = this.sources().sum(s => { return s.nbOfHarvestingSlots(); });
+    // this.log("workParts = " + nbWorkParts + " nbSources = " + nbSources + " size = " + harvesters.size() + " max = " + maxHarvesters);
     this._needMoreHarvesters = nbWorkParts < nbSources * 5 && harvesters.size() < maxHarvesters;
   }
   return this._needMoreHarvesters;
