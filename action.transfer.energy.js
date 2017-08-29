@@ -7,7 +7,7 @@ var actionTransferEnergy = {
    * @return {bool}
    **/
   transfer: function(creep, filter) {
-    var structures = utils.structuresNeedingEnergy(creep.room);
+    var structures = creep.room.structuresNeedingEnergy();
     if (filter) {
       structures = _.filter(structures, filter);
     }

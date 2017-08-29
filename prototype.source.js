@@ -36,4 +36,8 @@
       this.memory.associatedContainerId = value.id;
     }
   });
+
+Source.prototype.nbOfHarvestingSlots = function() {
+  return 9 - _.countBy(this.room.lookForAtArea(LOOK_TERRAIN, this.pos.y - 1, this.pos.x - 1, this.pos.y + 1, this.pos.x + 1, true), 'terrain').wall;
+};
 // };

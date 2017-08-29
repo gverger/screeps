@@ -1,7 +1,9 @@
 // module.exports = function() {
   StructureSpawn.prototype.acceptsWithdrawsFrom = function(roleName) {
-    return false;
-    return roleName !== 'hauler' && !require('utils').needMoreHarvesters(this);
+    if (roleName === 'hauler') {
+      return false;
+    }
+    return this.room.needMoreHarvesters();
   };
 
   Object.defineProperty(StructureSpawn.prototype, 'hasEnergy', {

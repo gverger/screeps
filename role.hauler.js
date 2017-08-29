@@ -51,7 +51,7 @@ var roleHauler = {
       } else {
         var canHarvest = actionHarvest.harvestAnything(creep);
         if (!canHarvest) {
-          var harvesters = _.filter(Game.creeps, function(c) {
+          var harvesters = creep.nativeRoom.creeps().filter(function(c) {
             if (c.spawning || c.memory.role !== 'harvester') {
               return false;
             }
@@ -63,7 +63,7 @@ var roleHauler = {
             return haulers.length == 0;
           });
 
-          var harvestersWithoutAContainer = _.filter(harvesters, function(c) {
+          var harvestersWithoutAContainer = harvesters.filter(function(c) {
             let containers = c.pos.findInRange(FIND_STRUCTURES, 1, {
               filter: {
                 function(s) {
@@ -76,17 +76,17 @@ var roleHauler = {
           });
 
           let harvester = null;
-          if (harvestersWithoutAContainer.length > 0) {
-            harvester = creep.pos.findClosestByPath(harvestersWithoutAContainer);
+          if (harvestersWithoutAContainer.size() > 0) {
+            harvester = creep.pos.findClosestByPath(harvestersWithoutAContainer.value());
           } else {
-            harvester = creep.pos.findClosestByPath(harvesters);
+            harvester = creep.pos.findClosestByPath(harvesters.value());
           }
           if (harvester) {
             if (utils.distance(creep, harvester) > 1) {
               creep.moveTo(harvester, {visualizePathStyle: {}});
             } else {
               let availableCapacity = creep.carryCapacity - this.carriedWeight(creep);
-              if (harvestersWithoutAContainer.length > 0 &&
+              if (harvestersWithoutAContainer.size() > 0 &&
                   (harvester.carry.energy > harvester.carryCapacity * 0.8
                     || harvester.carry.energy >= availableCapacity)
                   ) {

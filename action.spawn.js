@@ -20,7 +20,7 @@ var actionSpawn = {
     var body = this.bodyFor(spawn.room, nextRole);
     if (spawn.canCreateCreep(body) == OK) {
       var creep = spawn.createCreep(body, undefined, { role: nextRole, roomName: spawn.room.name});
-      console.log('New ' + nextRole + ' created.');
+      console.log(spawn.name + ': New ' + nextRole + ' created.');
     }
   },
 
@@ -47,7 +47,7 @@ var actionSpawn = {
 
     if (role == 'hauler') {
       bodyParts = [CARRY, MOVE];
-    } else if (role == 'harvester' && utils.harvestedSources(room).length == 2) {
+    } else if (role == 'harvester' && room.harvestedSources().length == 2) {
       body = [CARRY, MOVE];
       bodyParts = [WORK, WORK, WORK, WORK, WORK, MOVE];
       maxEnergy = Math.min(maxEnergy,
@@ -82,7 +82,7 @@ var actionSpawn = {
   },
 
   nbOf: function(room, roleName) {
-    return _(Game.creeps).filter({ memory: { role: roleName, roomName: room.name} }).size();
+    return room.creeps().filter({ memory: { role: roleName} }).size();
   },
 
   nbOfNonSpawning: function(room, roleName) {
@@ -106,7 +106,7 @@ var actionSpawn = {
     max['upgrader'] = timeToUpgradeController ? 2 : 0;
     max['claimer'] = _.size(_.filter(Game.flags, { memory: { role: 'claimer' } }));
     max['builder'] = 0;
-    if (utils.needMoreHarvesters(spawn)) {
+    if (spawn.room.needMoreHarvesters()) {
       max['harvester'] = this.nbOf(spawn.room, 'harvester') + 1;
     }
     max['hauler'] = Math.ceil(this.nbOfNonSpawning(spawn.room, 'harvester') / 2) + (timeToUpgradeController ? 1 : 0);
@@ -122,9 +122,7 @@ var actionSpawn = {
     }
     max['repairer'] = 0;
 
-    var nbOfCreeps = _(Game.creeps).
-      filter({ memory: {roomName: spawn.room.name } }).
-      countBy('memory.role');
+    var nbOfCreeps = _(spawn.room.creeps()).countBy('memory.role');
 
     if (!nbOfCreeps.get('harvester')) {
       return 'harvester';
@@ -140,12 +138,6 @@ var actionSpawn = {
         return r;
       }
     }
-  },
-
-  test: function() {
-    let room = Game.rooms.W7N7;
-    let nbOfCreeps = _(Game.creeps).filter({ memory: {roomName: room.name } }).countBy('memory.role');
-    return nbOfCreeps;
   }
 };
 

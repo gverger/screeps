@@ -6,6 +6,10 @@ module.exports = {
     }
   },
 
+  suicideFromRoom: function(roomName) {
+    _(Game.creeps).filter({memory: {roomName: roomName}}).each(c => {c.suicide();});
+  },
+
   whatNext: function() {
     return require('action.spawn').whatNext(this.spawn);
   },

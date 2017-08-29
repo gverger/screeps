@@ -4,21 +4,21 @@ var build = require('action.build.roads');
 var spawn = require('action.spawn');
 var cleanMemory = require('action.memory.clean');
 var lock = require('lock');
-const profiler = require('screeps-profiler');
+// const profiler = require('screeps-profiler');
 var cl = require('cl');
 
 require('prototypes');
 
-profiler.enable();
+// profiler.enable();
 module.exports = {
   loop: function() {
-    profiler.wrap(function() {
+    // profiler.wrap(function() {
       PathFinder.use(true);
       cleanMemory.clean();
       _.each(Game.spawns, function(s) {
         spawn.spawn(s);
         const room = s.room;
-        lock.visualDebug(room);
+        // lock.visualDebug(room);
         build.buildRoads(room);
         defend.defend(room);
         room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } }).forEach(function(s) {
@@ -41,6 +41,6 @@ module.exports = {
         }
       }
       _.each(Game.flags, f => { f.run(); });
-    });
+    // });
   }
 };

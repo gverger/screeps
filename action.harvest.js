@@ -28,17 +28,7 @@ var actionHarvest = {
           return false;
         }
 
-        let nbOfPlains = 9 -
-          _.countBy(source.room.lookForAtArea(
-                LOOK_TERRAIN,
-                source.pos.y - 1,
-                source.pos.x - 1,
-                source.pos.y + 1,
-                source.pos.x + 1,
-                true
-                ), 'terrain').wall;
-
-        if (harvesters.length >= nbOfPlains) {
+        if (harvesters.length >= source.nbOfHarvestingSlots()) {
           return false;
         }
         return true;
