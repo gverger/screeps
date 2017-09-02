@@ -7,7 +7,7 @@
 let prototype = Flag.prototype;
 
 prototype.hasAssignedCreep = function() {
-  return this.memory.assignedCreepId;
+  return this.memory.assignedCreepName;
 }
 
 prototype.assignCreep = function() {
@@ -17,19 +17,20 @@ prototype.assignCreep = function() {
   }
   console.log("Assigning " + unassignedCreep.name + " to "+ this.name);
   unassignedCreep.memory.flagName = this.name;
-  this.memory.assignedCreepId = unassignedCreep.id;
+  this.memory.assignedCreepName = unassignedCreep.name;
+  console.log("Assign : " + this.memory.assignedCreepName);
 }
 
 prototype.run = function() {
   // Check the assigned creep is still alive
-  let creepId = this.memory.assignedCreepId;
-  if (!creepId) {
+  let creepName = this.memory.assignedCreepName;
+  if (!creepName) {
     this.assignCreep();
     return;
   }
-  if (Game.getObjectById(creepId)) {
+  if (Game.creeps[creepName]) {
     return;
   }
   console.log("Deleting memory");
-  delete this.memory['assignedCreepId'];
+  delete this.memory['assignedCreepName'];
 }

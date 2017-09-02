@@ -6,7 +6,7 @@ var actionHarvest = {
   harvest: function(creep) {
     var source = this.lockedResource(creep);
     if (source) {
-      if (source.energy == 0 || !source.hasAssociatedContainer) {
+      if (source.energy == 0 || !source.hasAssociatedContainer || creep.getActiveBodyparts(WORK) < 5) {
         lock.release(creep, source);
         source = null;
       }
@@ -35,7 +35,7 @@ var actionHarvest = {
       }});
     let lockedSource = creep.lockClosest(sources);
     if (lockedSource) {
-      if (!lockedSource.hasAssociatedContainer) {
+      if (!lockedSource.hasAssociatedContainer || creep.getActiveBodyparts(WORK) < 5) {
         lock.release(creep, lockedSource);
       }
       if (creep.harvest(lockedSource) == ERR_NOT_IN_RANGE) {

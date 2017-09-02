@@ -10,6 +10,12 @@ var actionMemoryClean = {
       }
     }
     utils.clean();
+    for(let flag in Memory.flags) {
+      if (!Game.flags[flag]) {
+        console.log("Flag " + flag + " is no more.");
+        delete Memory.flags[flag];
+      }
+    }
   }
 };
 

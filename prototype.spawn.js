@@ -3,7 +3,7 @@
     if (roleName === 'hauler') {
       return false;
     }
-    return !this.room.needMoreHarvesters();
+    return this.room.controller.level < 5 && !this.room.needMoreHarvesters();
   };
 
   Object.defineProperty(StructureSpawn.prototype, 'hasEnergy', {
