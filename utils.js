@@ -1,16 +1,8 @@
 // var eta = require('utils.eta');
 var utils = {
-  /**
-   * @param {Room} room
-   * @return {Spawn}
-   **/
-  spawnOfRoom: function(room) {
-    return _(Game.spawns).find((s) => s.room == room);
-  },
-
   roles: function() {
     if (!this.cachedRoles) {
-      this.cachedRoles = ['harvester', 'hauler', 'remote-miner', 'claimer', 'upgrader', 'builder', 'repairer'];
+      this.cachedRoles = ['harvester', 'hauler', 'stealer', 'source-blocker', 'attacker', 'remote-miner', 'claimer', 'upgrader', 'builder', 'repairer'];
     }
     return this.cachedRoles;
   },
@@ -41,7 +33,8 @@ var utils = {
   clean: function() {
     this.__structuresNeedingEnergy = undefined;
     this.__structuresGivingEnergy = undefined;
-  }
+  },
+
 };
 
 module.exports = utils;

@@ -15,7 +15,8 @@ var roleBuilder = {
     if (creep.memory.status == 'filling') {
       var harvestAction = require('action.harvest');
       var canHarvest = harvestAction.harvestAnything(creep);
-      if (!canHarvest) {
+      if (!canHarvest && creep.room.controller.level < 4) {
+        harvestAction.harvest(creep);
         return;
       }
     } else if (creep.memory.status == 'building') {
@@ -30,6 +31,17 @@ var roleBuilder = {
       });
       if (!site) {
         site = creep.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES);
+        if (!site) {
+          var roadToRepair = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+            filter: function(object) {
+              return (object.hits < Math.min(object.hitsMax, 20000) / 2);
+            }
+          });
+          if (creep.repair(roadToRepair) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(roadToRepair, {visualizePathStyle: {}});
+          }
+          return;
+        }
       }
       var errCode = creep.build(site);
       if (errCode != OK && errCode != ERR_NOT_IN_RANGE) {

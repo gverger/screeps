@@ -10,11 +10,12 @@ var actionHarvest = {
         lock.release(creep, source);
         source = null;
       }
-      if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(source, {visualizePathStyle: {}});
-        return false;
+      let canHarvest = creep.harvest(source);
+      if (canHarvest == ERR_NOT_IN_RANGE) {
+        let canMove = creep.moveTo(source, {visualizePathStyle: {}});
+        return canMove == OK;
       }
-      return true;
+      return canHarvest == OK;
     }
     let sources = creep.nativeRoom.find(FIND_SOURCES_ACTIVE, {
       filter: function(source) {
@@ -82,7 +83,12 @@ var actionHarvest = {
       lock.releaseCreep(creep);
     }
     if (errCode == ERR_NOT_IN_RANGE) {
+      if (creep.memory.role == "hauler") {
+        creep.moveTo(structure, {ignoreCreeps: true, visualizePathStyle: {}});
+      }
+      else {
       creep.moveTo(structure, {visualizePathStyle: {}});
+      }
     }
     if (errCode != OK && errCode != ERR_NOT_IN_RANGE) {
       creep.say(errCode);

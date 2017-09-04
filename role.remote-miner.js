@@ -43,12 +43,10 @@ var remoteMiner = {
    **/
   transfering: function(creep) {
     if (creep.room !== creep.nativeRoom) {
-      const exitDir = creep.room.findExitTo(creep.nativeRoom);
-      const exit = creep.pos.findClosestByRange(exitDir);
-      creep.moveTo(exit);
+      creep.moveTo(creep.nativeRoom.controller, {reusePath: 50});
       return;
     }
-    transferEnergy.transfer(creep);
+    let error = transferEnergy.transfer(creep);
   },
 
   /**

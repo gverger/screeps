@@ -11,8 +11,7 @@ var actionBuildRoads = {
     var sources = room.find(FIND_SOURCES);
     for (let source of sources) {
       this.buildTheRoad(room, room.controller.pos, source.pos);
-      var spawn = utils.spawnOfRoom(room);
-      this.buildTheRoad(room, spawn.pos, source.pos);
+      this.buildTheRoad(room, room.spawn().pos, source.pos);
     }
     this.buildRoadsAroundExtensions(room);
   },

@@ -21,10 +21,8 @@ var defend = {
         room.find(FIND_HOSTILE_CREEPS).length == 0) {
       return;
     }
-    var spawn =  utils.spawnOfRoom(room);
-    if (spawn.hits < spawn.hitsMax ||
-        _(room.find(FIND_MY_CREEPS, { filter: (s) => s.room == room })
-          ).some((c) => { c.hits < c.hitsMax; })) {
+    var spawn = room.spawn();
+    if (spawn.hits < spawn.hitsMax) {
       controller.activateSafeMode();
     }
   },

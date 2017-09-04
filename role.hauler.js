@@ -6,18 +6,14 @@ var actionHarvest = require('action.harvest');
 var transferMinerals = require('action.transfer.minerals');
 
 var roleHauler = {
-  carriedWeight: function(creep) {
-    return _.sum(creep.carry);
-  },
-
   /**
    * @param {Creep} creep
    **/
   updateStatus: function(creep) {
-    if (creep.memory.status !== 'transfering' && this.carriedWeight(creep) == creep.carryCapacity) {
+    if (creep.memory.status !== 'transfering' && creep.carriedWeight() == creep.carryCapacity) {
       lock.releaseCreep(creep);
       creep.memory.status = 'transfering';
-    } else if (creep.memory.status !== 'filling' && this.carriedWeight(creep) == 0) {
+    } else if (creep.memory.status !== 'filling' && creep.carriedWeight() == 0) {
       creep.memory.status = 'filling';
     }
   },
@@ -26,7 +22,13 @@ var roleHauler = {
     this.updateStatus(creep);
 
     if (creep.memory.status == 'filling') {
-      var dropped = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES);
+      var dropped;
+      if (creep.room.storage) {
+        dropped = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {ignoreCreeps: true});
+      }
+      else {
+        dropped = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, { ignoreCreeps: true, filter: { resourceType: RESOURCE_ENERGY }});
+      }
       var canLock = false;
       if (dropped) {
         var currentLock = creep.memory.lock;
@@ -46,7 +48,7 @@ var roleHauler = {
           lock.release(creep, dropped);
         }
         if (pickup == ERR_NOT_IN_RANGE) {
-          creep.moveTo(dropped, {visualizePathStyle: {}});
+          creep.moveTo(dropped, {ignoreCreeps: true, visualizePathStyle: {}});
         }
       } else {
         var canHarvest = actionHarvest.harvestAnything(creep);
@@ -77,15 +79,15 @@ var roleHauler = {
 
           let harvester = null;
           if (harvestersWithoutAContainer.size() > 0) {
-            harvester = creep.pos.findClosestByPath(harvestersWithoutAContainer.value());
+            harvester = creep.pos.findClosestByPath(harvestersWithoutAContainer.value(), { filter: {ignoreCreeps: true}});
           } else {
-            harvester = creep.pos.findClosestByPath(harvesters.value());
+            harvester = creep.pos.findClosestByPath(harvesters.value(), { filter: {ignoreCreeps: true}});
           }
           if (harvester) {
             if (utils.distance(creep, harvester) > 1) {
-              creep.moveTo(harvester, {visualizePathStyle: {}});
+              creep.moveTo(harvester, {ignoreCreeps: true, visualizePathStyle: {}});
             } else {
-              let availableCapacity = creep.carryCapacity - this.carriedWeight(creep);
+              let availableCapacity = creep.carryCapacity - creep.carriedWeight();
               if (harvestersWithoutAContainer.size() > 0 &&
                   (harvester.carry.energy > harvester.carryCapacity * 0.8
                     || harvester.carry.energy >= availableCapacity)

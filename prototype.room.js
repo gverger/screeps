@@ -63,6 +63,13 @@ Object.defineProperty(Room.prototype, 'harvestOnly', {
   }
 });
 
+Room.prototype.spawn = function() {
+  if (!this._spawn) {
+    this._spawn = _(Game.spawns).find((s) => s.room == this);
+  }
+  return this._spawn;
+}
+
 Room.prototype.timeToUpgradeController = function() {
   let level = this.controller.level;
   let maxNbOfExtensions = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][level];
@@ -70,9 +77,13 @@ Room.prototype.timeToUpgradeController = function() {
 };
 
 Room.prototype.nbOfExtensions = function() {
-  let extensions =
-    this.find(FIND_MY_STRUCTURES, { filter: (s) => s.structureType == STRUCTURE_EXTENSION });
-  return extensions.length;
+  if (!this._nbOfExtensions) {
+    this._nbOfExtensions =
+      this.find(FIND_MY_STRUCTURES, { filter: (s) => {
+        return s.structureType == STRUCTURE_EXTENSION ;
+      }}).length;
+  }
+  return this._nbOfExtensions;
 };
 
 Room.prototype.needMoreHarvesters = function() {
@@ -95,6 +106,13 @@ Room.prototype.needMoreHarvesters = function() {
   }
   return this._needMoreHarvesters;
 };
+
+Room.prototype.hasStorage = function() {
+  if (this._hasStorage == undefined) {
+    this._hasStorage = this.find(FIND_STRUCTURES, {filter: { structureType: STRUCTURE_STORAGE }}).lengsth > 0
+  }
+  return this._hasStorage;
+}
 
 Room.prototype.log = function(message) {
   console.log("[" + this.name + "] " + message);

@@ -1,3 +1,5 @@
+var harvestAction = require('action.harvest');
+
 var roleUpgrader = {
   updateStatus: function(creep) {
     if (creep.carry.energy == creep.carryCapacity && creep.memory.status != 'upgrading') {
@@ -16,13 +18,38 @@ var roleUpgrader = {
       return;
     }
     if (creep.memory.status == 'filling') {
-      require('action.harvest').harvestAnything(creep);
+      let canHarvest = harvestAction.harvestAnything(creep);
+      if (!canHarvest && creep.room.controller.level < 4) {
+        harvestAction.harvest(creep);
+        return;
+      }
     } else if (creep.memory.status == 'upgrading') {
       let room = Game.rooms[creep.memory.roomName];
       var controller = room.controller;
       if (creep.upgradeController(controller) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(controller, {visualizePathStyle: {}});
+        creep.moveTo(controller, {ignoreCreeps: false, visualizePathStyle: {}});
       }
+    }
+  },
+
+
+  /**
+   * @param {Creep} creep
+   * @param {RoomPosition} position
+   **/
+  canGo: function(creep, position) {
+    return creep.memory.status != 'upgrading' || position.getRangeTo(creep.room.controller) <= 3;
+  },
+
+  /**
+   * @param {Creep} creep
+   **/
+  moveOut(creep) {
+    if (creep.memory.status == "upgrading") {
+      let positions = creep.room.controller.freeSlots();
+      let position = creep.pos.findClosestByPath(positions, {ignoreCreeps: true});
+      creep.moveTo(position);
+      creep.say("ok");
     }
   },
 

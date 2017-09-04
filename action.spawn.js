@@ -43,9 +43,10 @@ var actionSpawn = {
 
     var body = [];
     var bodyParts = [CARRY, WORK, MOVE];
+    var suffix = [];
     var energyNeeded = 0;
 
-    if (role == 'hauler') {
+    if (role == 'hauler' || role == 'stealer') {
       bodyParts = [CARRY, MOVE];
     } else if (role == 'harvester' && room.harvestedSources().length == room.sources().size()) {
       body = [CARRY, MOVE];
@@ -59,6 +60,21 @@ var actionSpawn = {
       body = [MOVE, MOVE, CLAIM];
       energyNeeded = this.bodyCost(body);
     }
+    else if (role == 'attacker') {
+      body = [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH];
+      bodyParts = [RANGED_ATTACK, MOVE, MOVE];
+      suffix = [MOVE, HEAL];
+      energyNeeded = this.bodyCost(body);
+      maxEnergy = maxEnergy - this.bodyCost(suffix);
+    }
+    else if (role == 'source-blocker') {
+      body = [MOVE];
+      energyNeeded = this.bodyCost(body);
+      maxEnergy = energyNeeded;
+    }
+    if (energyNeeded > room.energyCapacityAvailable) {
+      console.log(spawn.name + " CANNOT BUILD " + role);
+    }
     while (energyNeeded <= maxEnergy && body.length < 50) {
       for (let bodyPart of bodyParts) {
         energyNeeded += BODYPART_COST[bodyPart];
@@ -68,6 +84,7 @@ var actionSpawn = {
         body.push(bodyPart);
       }
     }
+    suffix.forEach(part => { body.push(part); });
     return body;
   },
 
@@ -100,9 +117,13 @@ var actionSpawn = {
   whatNext: function(spawn) {
     let timeToUpgradeController = spawn.room.timeToUpgradeController();
     var max = {};
+    let flags = _(Game.flags);
     max['harvester'] = 2;
     max['hauler'] = 1;
-    max['remote-miner'] = _.size(_.filter(Game.flags, { memory: { role: 'remote-miner' } }));
+    max['attacker'] = flags.filter(f => { return f.needCreep('attacker', spawn); }).size();
+    max['stealer'] = flags.filter(f => { return f.needCreep('stealer', spawn); }).size();
+    max['source-blocker'] = flags.filter(f => { return f.needCreep('source-blocker', spawn); }).size();
+    max['remote-miner'] = flags.filter(f => { return f.needCreep('remote-miner', spawn); }).size();
     max['upgrader'] = timeToUpgradeController ? 4 : 1;
     max['claimer'] = _.size(_.filter(Game.flags, { memory: { role: 'claimer' } }));
     max['builder'] = 0;

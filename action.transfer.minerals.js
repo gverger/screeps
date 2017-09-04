@@ -11,16 +11,19 @@ var actionTransferMinerals = {
     if (filter) {
       structures = _.filter(structures, filter);
     }
+    resource = _.findKey(creep.carry, count => { return count > 0; });
     if (structures != '') {
       var s = creep.pos.findClosestByPath(structures);
-      resource = _.findKey(creep.carry, count => { return count > 0; });
       if (!resource) {
         return false;
       }
       if (creep.transfer(s, resource) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(s, {visualizePathStyle: {}});
+        creep.moveTo(s, {ignoreCreeps: true, visualizePathStyle: {}});
       }
       return true;
+    }
+    else {
+      creep.drop(resource);
     }
     return false;
   }

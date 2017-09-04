@@ -40,6 +40,18 @@ module.exports = {
           // return;
         }
       }
+    _.each(Game.creeps, c => {
+      if (c.blockingCreep()) {
+        let creep = c.blockingCreep();
+        let role = utils.role(creep.memory.role);
+        if (!creep.isMoving() && (!role.canGo || role.canGo(creep, c.pos))) {
+          creep.moveTo(c.pos);
+          creep.say('O');
+        } else {
+          c.block();
+        }
+      }
+    });
       _.each(Game.flags, f => { f.run(); });
     // });
   }

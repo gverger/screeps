@@ -8,3 +8,5 @@ require('prototype.extension');
 require('prototype.link');
 require('prototype.resource');
 require('prototype.flag');
+require('prototype.room-position');
+require('prototype.controller');

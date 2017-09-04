@@ -6,6 +6,10 @@
 
 let prototype = Flag.prototype;
 
+prototype.needCreep = function(role, spawn) {
+  return this.memory.role == role && this.memory.spawnName == spawn.name;
+}
+
 prototype.hasAssignedCreep = function() {
   return this.memory.assignedCreepName;
 }
@@ -28,7 +32,8 @@ prototype.run = function() {
     this.assignCreep();
     return;
   }
-  if (Game.creeps[creepName]) {
+  let creep = Game.creeps[creepName];
+  if (creep && creep.memory.role == this.memory.role && creep.memory.flagName == this.name) {
     return;
   }
   console.log("Deleting memory");
