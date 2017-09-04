@@ -61,6 +61,9 @@ var roleHarvester = {
         return;
       }
       let positions = source.freeSlots();
+      if (positions.length == 0) {
+        return;
+      }
       let position = creep.pos.findClosestByPath(positions, {ignoreCreeps: true});
       creep.moveTo(position);
       creep.say("ok");

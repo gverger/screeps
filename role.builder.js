@@ -1,3 +1,4 @@
+var transferEnergy = require('action.transfer.energy');
 var roleBuilder = {
   updateStatus: function(creep) {
     if (creep.carry.energy == creep.carryCapacity && creep.memory.status != 'building') {
@@ -32,13 +33,16 @@ var roleBuilder = {
       if (!site) {
         site = creep.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES);
         if (!site) {
-          var roadToRepair = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+          var toRepair = creep.pos.findClosestByPath(FIND_STRUCTURES, {
             filter: function(object) {
               return (object.hits < Math.min(object.hitsMax, 20000) / 2);
             }
           });
-          if (creep.repair(roadToRepair) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(roadToRepair, {visualizePathStyle: {}});
+          if (!toRepair) {
+            creep.moveTo(creep.room.spawn());
+          }
+          if (creep.repair(toRepair) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(toRepair, {visualizePathStyle: {}});
           }
           return;
         }

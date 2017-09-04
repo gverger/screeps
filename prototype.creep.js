@@ -102,6 +102,11 @@ if (!Creep.prototype._move) {
       if (this._blockingCreep) {
         this._blockingCreep.moveOut(this.pos);
         // this._blockingCreep.say("B");
+      } else {
+        let structure = nextPos.lookFor(LOOK_STRUCTURES)[0];
+        if (structure && utils.isBlockingStructureType(structure.structureType)) {
+          this._isMoving = false;
+        }
       }
     }
     return returnValue;

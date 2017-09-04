@@ -35,6 +35,14 @@ var utils = {
     this.__structuresGivingEnergy = undefined;
   },
 
+  isBlockingStructureType: function(structureType) {
+    return structureType == STRUCTURE_EXTENSION ||
+      structureType == STRUCTURE_LINK ||
+      structureType == STRUCTURE_STORAGE ||
+      structureType == STRUCTURE_SPAWN ||
+      structureType == STRUCTURE_WALL ||
+      structureType == STRUCTURE_TOWER;
+  }
 };
 
 module.exports = utils;

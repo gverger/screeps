@@ -45,7 +45,7 @@ var roleUpgrader = {
    * @param {Creep} creep
    **/
   moveOut(creep) {
-    if (creep.memory.status == "upgrading") {
+    if (creep.memory.status == "upgrading" && creep.pos.getRangeTo(creep.room.controller) <= 3) {
       let positions = creep.room.controller.freeSlots();
       let position = creep.pos.findClosestByPath(positions, {ignoreCreeps: true});
       creep.moveTo(position);
