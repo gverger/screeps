@@ -62,10 +62,17 @@ Source.prototype.freeSlots = function() {
   if (!this._freeSlots) {
   /* @type {Array} slots */
   let slots = this.slots();
-  let controller = this;
+  let source = this;
     this._freeSlots =
       slots.filter(function(position) {
-        return controller.room.lookForAt(LOOK_CREEPS, position).length == 0
+        if (source.room.lookForAt(LOOK_CREEPS, position).length > 0) {
+          return false;
+        }
+        structure = source.room.lookForAt(LOOK_STRUCTURES, position)[0];
+        if (!structure) {
+          return true;
+        }
+        return structure.structureType != STRUCTURE_EXTENSION;
       });
   }
   return this._freeSlots;

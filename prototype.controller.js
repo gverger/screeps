@@ -43,7 +43,14 @@ StructureController.prototype.freeSlots = function() {
   let controller = this;
     this._freeSlots =
       slots.filter(function(position) {
-        return controller.room.lookForAt(LOOK_CREEPS, position).length == 0
+        if (controller.room.lookForAt(LOOK_CREEPS, position).length > 0) {
+          return false;
+        }
+        structure = controller.room.lookForAt(LOOK_STRUCTURES, position)[0];
+        if (!structure) {
+          return true;
+        }
+        return structure.structureType != STRUCTURE_EXTENSION;
       });
   }
   return this._freeSlots;

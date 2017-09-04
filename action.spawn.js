@@ -54,8 +54,8 @@ var actionSpawn = {
       maxEnergy = Math.min(maxEnergy,
           this.bodyCost([CARRY, MOVE, MOVE, WORK, WORK, WORK, WORK, WORK]));
       energyNeeded = this.bodyCost(body);
-    // } else if (role == 'remote-miner') {
-    //   bodyParts = [CARRY, MOVE, CARRY, MOVE, WORK];
+    } else if (role == 'remote-miner') {
+      bodyParts = [CARRY, MOVE, CARRY, MOVE, WORK];
     } else if (role == 'claimer') {
       body = [MOVE, MOVE, CLAIM];
       energyNeeded = this.bodyCost(body);
