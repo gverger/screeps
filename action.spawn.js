@@ -124,7 +124,7 @@ var actionSpawn = {
     max['stealer'] = flags.filter(f => { return f.needCreep('stealer', spawn); }).size();
     max['source-blocker'] = flags.filter(f => { return f.needCreep('source-blocker', spawn); }).size();
     max['remote-miner'] = flags.filter(f => { return f.needCreep('remote-miner', spawn); }).size();
-    max['upgrader'] = timeToUpgradeController ? 4 : 1;
+    max['upgrader'] = timeToUpgradeController ? (spawn.room.controller.level < 4 ? 4 : 3) : 1;
     max['claimer'] = _.size(_.filter(Game.flags, { memory: { role: 'claimer' } }));
     max['builder'] = 0;
     if (spawn.room.needMoreHarvesters()) {
@@ -136,7 +136,7 @@ var actionSpawn = {
       if (spawn.room.find(FIND_MY_CONSTRUCTION_SITES, {
         filter: (s) => { return s.structureType == STRUCTURE_EXTENSION || s.structureType == STRUCTURE_CONTAINER || s.structureType == STRUCTURE_LINK }
       }).length > 0) {
-        max['builder'] = 4;
+        max['builder'] = spawn.room.controller.level < 4 ? 4 : 3;
       }
     }
     max['repairer'] = 0;
